@@ -1,0 +1,33 @@
+features
+	UmlJava
+		mandatory
+			InterfaceCreation
+				optional
+					InterfacePrefix
+			AttributeCreation
+				optional
+					AccessorGeneration
+			AttributeModifiers
+				optional
+					AttributeStaticCall
+			MethodModifiers
+				optional
+					MethodStaticCall
+			ClassCreation
+				alternative
+					ClassCreation.Class
+					ClassCreation.Interface
+					ClassCreation.Enum
+			DataTypeCreation
+				alternative
+					DataTypeCreation.Class
+					DataTypeCreation.Record
+			InterfaceRealization
+				optional
+					RealizationSuffix
+		optional
+			ConstructorCreation
+
+constraints
+	ConstructorCreation => ClassCreation.Class
+	DataTypeCreation.Class => ClassCreation.Class

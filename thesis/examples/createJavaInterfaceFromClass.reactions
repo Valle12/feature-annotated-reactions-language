@@ -1,0 +1,14 @@
+routine createJavaInterfaceFromClass(uml::Class umlClass) {
+  match {
+    require absence of java::ConcreteClassifier corresponding to umlClass
+  }
+  create {
+    val javaInterface = new java::Interface
+  }
+  update {
+    javaInterface.name = umlClass.name
+    javaInterface.makePublic
+    createJavaCompilationUnit(umlClass, javaInterface)
+    addCorrespondenceBetween(umlClass, javaInterface)
+  }
+}

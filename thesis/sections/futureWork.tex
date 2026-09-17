@@ -1,0 +1,65 @@
+\chapter{Future work}
+\label{ch:FutureWork}
+
+Both parts of the approach leave room for further work.
+Most of the directions below start from the drawbacks that \autoref{ch:Conclusion} names.
+
+\section{Feature annotations}
+\label{sec:FutureWork:FeatureAnnotations}
+
+Validating a configuration prior to derivation would eliminate the need for the methodologist to manually ensure its validity.
+The preprocessor derives every configuration provided, so selecting two alternatives of \textit{ClassCreation} yields two reactions on the same trigger instead of an error.
+The feature model for the umljava rules is already available as \texttt{feature-model.uvl}, located alongside the nine configurations \cite{vitruv-dsls-fork}.
+A preprocessor capable of interpreting this model could reject invalid configurations and explicitly identify the violated group or constraint.
+White et al. identify the minimal modification to a selection required to transform an invalid configuration into a valid one \cite{white2010automated}.
+Validity corresponds to satisfiability, a property that existing feature model tools are already capable of verifying \cite{flamapy-ide,kastner2009featureide}.
+Feature names used in annotations and configurations could be validated against the same model, as misspelled names currently result in dropped reactions without any warning.
+
+A runtime decision, such as the collection type dialog described in \autoref{listing:existing-user-interaction}, could be integrated into the configuration.
+The options \texttt{ArrayList}, \texttt{LinkedList}, and \texttt{HashSet} would constitute an alternative group, with the selection determining the decision at derivation time.
+However, the dialog is initiated by a routine accessed by the reactions of several features, including \textit{AttributeType}, \textit{Multiplicity}, and \textit{ReturnType}.
+Because routines lack annotations, each reaction would require a separate copy for each collection type.
+Applying annotations to routines would eliminate the need for these duplicate copies.
+In this approach, shared rules would invoke different routines, and switching configurations would necessitate comparing semantic hashes.
+If choices differ between elements, the dialog remains necessary, since a configuration applies a single decision to the entire rule set (\autoref{sec:Concept:FeatureAnnotations:BindingTime}).
+
+\section{Migration}
+\label{sec:FutureWork:Migration}
+
+Combining the two commits involved in a selective migration can decrease overall runtime.
+A full migration replays its snapshot in a single commit, while a selective migration requires two separate commits.
+The first commit removes the affected elements, and the second commit reinserts their respective copies.
+Each commit constitutes a complete change propagation, concluding with writing the modified models, correspondences, identifiers, and the registry to disk.
+A single commit would accomplish the same tasks within one propagation and write the resulting state only once.
+However, Vitruvius records all deletions at the conclusion of each commit.
+Therefore, a single commit must process deletions prior to insertions to ensure that old counterparts are removed before new ones are established.
+Writing the state only once at the conclusion of the migration would also reduce the computational cost of subsequent commits, including those resulting from source updates.
+In this scenario, the preservation step would be required to read the migrated state from memory rather than from disk.
+
+Utilizing copies of the affected elements may reduce the duration of the preservation step in selective migration.
+Currently, this step requires approximately the same amount of time as a full migration (\autoref{sec:Evaluation:MigrationEffort:Runtime}).
+The process involves loading both the pre-migration and post-migration states from disk, then comparing every derived file, including those that remain unchanged.
+Selective migration already duplicates the affected elements in memory prior to the initial commit.
+If extended to include the derived elements corresponding to the affected subtrees, these copies would also contain the underived content of the dismantled elements.
+Consequently, the preservation step could begin with these in-memory copies rather than loading both states from disk.
+
+Maintaining a persistent record of the changes performed by each rule would enhance the precision of the preservation step.
+The preservation step identifies underived content through the absence of a corresponding element.
+In addition to the handwritten content, the reports list 957 items that were not authored by any individual, primarily consisting of modifiers, initial values, and methods (\autoref{sec:Evaluation:MigrationQuality:ContentNotCarriedOver}).
+During a propagation, Vitruvius separates the change a developer commits from the consequential changes of the rules, but it does not persist this separation.
+Documenting the specific rule responsible for each change would enable the preservation step to exclude all content generated by rules that has not been subsequently modified by a developer.
+Hearnden et al. maintain a comparable record for a continuously running transformation \cite{hearnden2006incremental}, whereas a V-SUM would require persistence of this record between executions.
+
+The same record enables the removal of residual elements from the dominant model.
+Five features also modify the UML model, and the residual elements from these features cause 43 out of 72 selective migrations to deviate from derivations performed from scratch (\autoref{sec:Evaluation:MigrationQuality:EquivalenceToADerivationFromScratch}).
+A full migration also retains the dominant model and is subject to the same limitation.
+Both types of migration can subsequently reverse the recorded changes associated with deselected features.
+
+Given such a record, the preservation process can automatically restore handwritten content.
+In the 27 migrations where the report indicates that the complete body of \texttt{Member.totalWeight} is retained, the \texttt{--preserve user} option does not add items from the previous rules.
+Content identified as lost in the report can be recovered through targeted repairs, each addressing a specific recorded cause.
+In the eight migrations to config7, \texttt{Member} is transformed into an interface, with methods that contain no statements.
+A repair may involve creating a class that implements the interface and contains the method bodies.
+This approach is similar to the delegation mechanism, where a handwritten class implements an interface generated from the model's method signatures \cite{greifenberg2015integration}.
+Because the new rules propagate the created class to other models, any repair must be compatible with the target configuration.
+Once handwritten content is restored and residual changes are reverted, migrating to another configuration and returning can reproduce the original V-SUM, except for the order of modifiers and members.

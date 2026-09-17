@@ -1,0 +1,163 @@
+\chapter{Introduction}
+\label{ch:Introduction}
+
+The description of a software system is typically spread across several models of different languages \cite{KLARE2021110815}.
+A UML class diagram typically represents the system's design, while the Java source code contains its implementation.
+Both artifacts describe the same classes, resulting in overlapping information.
+Renaming a class in the UML model necessitates renaming the corresponding Java class and its associated file.
+When such a change is not carried over, the models contradict each other, and the system description becomes inconsistent \cite{KLARE2021110815}.
+Manual consistency checking and restoration are error-prone, and resolving inconsistencies can be costly \cite{KLARE2021110815}.
+
+\section{Motivation}
+\label{sec:Introduction:Motivation}
+
+Consistency preservation rules automate this process by propagating changes made in one model to all related models.
+Vitruvius is a framework that extends these rules \cite{KLARE2021110815}.
+Vitruvius integrates system models into a Virtual Single Underlying Model (V-SUM), which developers access and modify through specific views.
+Following each modification, the V-SUM applies consistency preservation rules specified by a methodologist using a dedicated language, such as the Reactions Language \cite{KLARE2021110815}.
+Developers interact with the models but are not permitted to alter the consistency preservation rules \cite{KLARE2021110815}.
+The methodologist determines which elements the V-SUM derives and their respective forms during the rule specification process.
+Vitruvius and the Reactions Language are discussed in detail in \autoref{sec:Foundations:Vitruvius} and \autoref{sec:Foundations:ReactionsLanguage}.
+
+A consistency specification commits to a single mapping between the involved metamodels, even though multiple mappings may be justifiable.
+A UML design can be mapped to Java in various ways to accommodate different implementation constraints \cite{harrison2000mapping}.
+For example, Harrison et al. represent each UML class as a Java interface with two implementing classes, exposing each attribute exclusively through getter and setter methods \cite{harrison2000mapping}.
+Certain decisions are determined by platform specific requirements.
+A JavaBeans component defines a property by supplying public getter and setter methods \cite{javaBeansTutorial}.
+A Jakarta Persistence entity must be implemented as a class, not as an interface or enumeration \cite{jakartaPersistence}.
+That class must not be final and needs a public or protected constructor without parameters \cite{jakartaPersistence}.
+The appropriate realization produced by a rule set therefore depends on the specific requirements of the project in which it is applied.
+
+A methodologist who wants to support several conventions currently has to maintain a separate copy of the rule set for each of them.
+A correction to a rule that the copies share then has to be applied to every copy, and a copy that misses it diverges from the others.
+Since every combination of independent choices requires a rule set of its own, the number of copies multiplies with each further choice.
+
+Furthermore, the rule set applied to a project is subject to change over time.
+Conventions may evolve throughout the system's lifecycle, such as when a project transitions to a new Java version or adopts updated guidelines.
+Rules are also revised in response to identified defects, as demonstrated by the corrections made to the original umljava rules during this work (\autoref{sec:Evaluation:AnnotationMechanism:ChangesToTheOriginalRules}).
+At that point, V-SUMs constructed under the previous rule set are already present.
+A persisted V-SUM holds its models, the correspondences between their elements and the identifiers of those elements, but no information about the rules that produced them \cite{vitruviusGithub}.
+When loaded with a new rule set, the V-SUM preserves all elements derived by the previous rules, while only subsequent modifications adhere to the updated rules.
+This process results in a V-SUM that is not consistent with either the original or the updated rule set.
+In the absence of a migration mechanism, a project must either manually repair its V-SUM, regenerate it entirely under the new rules, or continue using the previous rules.
+A derivation from scratch discards the handwritten content that no rule derives.
+Klare et al. identify the evolution of a V-SUM metamodel, including its consistency preservation rules, as an area for future research \cite{KLARE2021110815}.
+Each V-SUM constructed with such a metamodel must then co-evolve to maintain consistency among its models \cite{KLARE2021110815}.
+No publication was found that migrates a persisted V-SUM to a changed consistency specification (\autoref{sec:RelatedWork:ResearchGap}).
+
+This thesis addresses both problems.
+In accordance with the principles of software product lines, each reaction is annotated by a methodologist with its corresponding feature, ensuring that a single rule set encompasses the reactions of all conventions (\autoref{sec:Foundations:SoftwareProductLines}).
+This rule set is called the 150\% rule set.
+Project-specific rules are derived from the 150\% rule set based on a given configuration, which represents the set of features selected for the project.
+A derived rule set contains no annotations, so the compiler of the Reactions Language processes it like any ordinary rule set.
+When the rules of an existing V-SUM change, a migration brings the V-SUM to the new rules.
+The migration process either retains a single dominant model and re-derives all other models from it, or limits modifications to only those elements affected by the added, removed, or changed rules.
+Content without correspondence, such as handwritten method bodies, can be identified and subsequently restored.
+
+\section{Research goals}
+\label{sec:Introduction:ResearchGoals}
+
+This thesis addresses two primary objectives.
+The first objective is to make the consistency preservation rules of a V-SUM variable by annotating reactions with features.
+The second objective is to migrate a persisted V-SUM to a changed rule set, so that it becomes consistent under the new rules.
+Both objectives are evaluated using the Goal Question Metric (GQM) approach, which refines each goal into quantifiable questions and addresses each question with a corresponding set of metrics \cite{basili1992gqm}.
+G1 focuses on the annotation process and the derivation of the rule set.
+G2 through G4 address the migration process, specifically evaluating the quality of the migration outcome, identifying the impact of rule changes, and assessing the required effort.
+G5 investigates the applicability of the approach to rule sets beyond those for which it was originally developed.
+Most questions are answered on a library example that is derived with the rules of the umljava case study \cite{vitruv-casestudies-fork} in each of their nine configurations (\autoref{ch:RunningExample}).
+The four metamodels of BrakeCaseStudy are additionally used to compare strategies for selecting the dominant model.
+For G5, the annotation mechanism is applied to the pcmumlclass rules.
+
+\begin{description}
+      \item[G1: Annotation mechanism.] \label{gqm:G1} Analyze the annotation mechanism with respect to compactness, adaptation effort, the changes to the original rules, validity of the derived configurations, and processing overhead.
+            \begin{itemize}
+                  \item[Q1.1] How compact is a 150\% rule set compared to maintaining the rule set of every configuration separately?
+                  \item[M1.1] LOC and number of files of the 150\% rule set compared to the sum over all separately maintained configurations.
+                  \item[Q1.2] How much adaptation effort is required when a feature or a configuration is added or changed?
+                  \item[M1.2] Number of files created or modified per added or changed feature or configuration.
+                  \item[Q1.3] How much did the original rule set have to be changed to become a 150\% rule set?
+                  \item[M1.3] Lines of code the 150\% rule set adds to the original rule set, split into annotations, new reactions and routines, and changes to existing reactions and routines, the latter classified by cause.
+                  \item[Q1.4] Do the configurations derived by the preprocessor produce valid and operational rules?
+                  \item[M1.4] Per derived configuration whether the generated Java compiles and how many case study tests pass with and without their feature gates, and the number of original tests passing on config1.
+                  \item[Q1.5] How much overhead does preprocessing add when a configuration is built and tested?
+                  \item[M1.5] Preprocessing time, in absolute terms and as a share of a test run of the case study.
+            \end{itemize}
+      \item[G2: Migration quality.] \label{gqm:G2} Analyze the migration with respect to its equivalence to a derivation from scratch, the validity of its artifacts, the content it carries over, its reversibility, and the choice of the dominant model.
+            \begin{itemize}
+                  \item[Q2.1] Does a migrated V-SUM describe the same state that the new rules derive from scratch?
+                  \item[M2.1] Number of configuration pairs whose migrated models are equivalent to a derivation of the target configuration from scratch.
+                  \item[Q2.2] Are the artifacts produced by a migration valid?
+                  \item[M2.2] Number of migration runs whose resulting Java compiles.
+                  \item[Q2.3] How much content cannot be carried over automatically?
+                  \item[M2.3] Number of handwritten elements the preservation report lists as preservable or lost per migration, and the number of the other listed elements grouped by cause.
+                  \item[Q2.4] Is a migration reversible?
+                  \item[M2.4] Number of configuration pairs for which migrating back reproduces the original V-SUM.
+                  \item[Q2.5] How do the strategies for choosing the dominant model compare?
+                  \item[M2.5] Chosen dominant model, resulting number of changes, and selection time per strategy.
+            \end{itemize}
+      \item[G3: Inconsistency identification.] \label{gqm:G3} Analyze the comparison of rule sets and the matching of triggers with respect to the inconsistencies a rule change causes, the precision with which affected elements are identified, and the rule changes only semantic hashes detect.
+            \begin{itemize}
+                  \item[Q3.1] Which inconsistencies can arise when a feature selection is changed after artifacts already exist?
+                  \item[M3.1] Number and type of identified inconsistency classes.
+                  \item[Q3.2] How precisely are the affected model elements identified?
+                  \item[M3.2] Reported dirty rules and affected elements compared to the elements actually differing from a derivation from scratch.
+                  \item[Q3.3] Which rule changes require a semantic hash instead of a comparison of reaction identifiers?
+                  \item[M3.3] Number of kinds of rule changes detected by comparing reaction identifiers and by comparing semantic hashes.
+            \end{itemize}
+      \item[G4: Migration effort.] \label{gqm:G4} Analyze the selective migration with respect to its scope and runtime compared to a full migration.
+            \begin{itemize}
+                  \item[Q4.1] Which share of the rules and model elements of a V-SUM does a selective migration process?
+                  \item[M4.1] Dirty rules relative to all rules and repropagated elements relative to all elements of the dominant model, per configuration pair.
+                  \item[Q4.2] Does the reduced scope translate into a reduced runtime?
+                  \item[M4.2] Runtime of the selective compared to the full migration.
+            \end{itemize}
+      \item[G5: Generalizability.] \label{gqm:G5} Analyze the approach with respect to transferability to rules beyond the ones it was developed on.
+            \begin{itemize}
+                  \item[Q5.1] Does the transferred solution remain operational?
+                  \item[M5.1] Number of existing tests that pass without changes.
+                  \item[Q5.2] Is the mechanism independent of the concrete rules and metamodels it is applied to?
+                  \item[M5.2] Number of specific code paths in the preprocessor and the migration.
+            \end{itemize}
+\end{description}
+
+\section{Contributions}
+\label{sec:Introduction:Contributions}
+
+This thesis makes four contributions.
+
+\begin{itemize}
+      \item Feature annotations in the Reactions Language associate specific reactions with corresponding features.
+            A preprocessor subsequently derives the rule set for a given configuration from a 150\% rule set (\autoref{sec:Concept:FeatureAnnotations}, \autoref{sec:Implementation:Preprocessor}).
+            Because an annotation retains the declaration of a reaction, each rule maintains its identifier in every configuration in which it appears.
+            This property serves as the foundation for selective migration.
+      \item The rules of the umljava case study are expanded into a 150\% rule set, with a feature model comprising 37 features.
+            From this model, nine distinct configurations are derived (\autoref{ch:RunningExample}).
+            The rule set introduces alternative realizations for UML classes and data types, incorporates optional conventions, and addresses defects present in the original rules.
+            The tests within the case study are gated by the features they require or exclude (\autoref{sec:Implementation:Preprocessor}, \autoref{sec:Implementation:Testing}).
+      \item Migration applies an updated rule set to a persisted V-SUM using one of two approaches (\autoref{sec:Concept:Migration}, \autoref{sec:Implementation:Migration}).
+            Full migration retains a dominant model, selected through one of three strategies, and subsequently derives all other models from it.
+            Selective migration compares the rules recorded in the V-SUM with the updated rules and repropagates only the affected elements, the elements that the added, removed or changed rules apply to.
+            To support this process, change propagation in Vitruvius stores the identifier, semantic hash, and a trigger summary for each rule.
+            Additionally, a defect in change recording for cascaded deletions has been addressed \cite{vitruv-change-issue}.
+            A subsequent preservation step reports or restores underived content, specifically content not referenced by any correspondence, which would otherwise be lost during migration.
+      \item The approach is evaluated according to the GQM plan using 81 ordered configuration pairs from the library example, the BrakeCaseStudy, and a transfer to the pcmumlclass rules (\autoref{ch:Evaluation}).
+            Of these pairs, 72 switch between two different configurations, whereas the other nine keep their configuration.
+            The generated artifacts and evaluation scripts have been made publicly available \cite{thesis-repo}.
+\end{itemize}
+
+The implementation extends the Vitruvius repositories Vitruv-DSLs \cite{vitruv-dsls-fork}, Vitruv-Change \cite{vitruv-change-fork} and Vitruv-CaseStudies \cite{vitruv-casestudies-fork}.
+In addition, BrakeCaseStudy is ported to Vitruvius 4 together with the extended Vitruv-Change and Vitruv-DSLs \cite{brakecasestudy-fork}.
+
+\section{Thesis structure}
+\label{sec:Introduction:ThesisStructure}
+
+This thesis begins by establishing foundational concepts, reviewing related work, and introducing the running example.
+It then presents the proposed approach and its implementation, followed by evaluation, conclusion, and directions for future research.
+The foundational section in \autoref{ch:Foundations} addresses the Eclipse Modeling Framework, Vitruvius, the Reactions Language, JaMoPP, and software product lines.
+\Autoref{ch:RelatedWork} discusses related approaches to variability, migration of existing artifacts, preservation of handwritten content, and consistency.
+The chapter concludes by identifying the research gap.
+The running example in \autoref{ch:RunningExample} presents the umljava rules, their associated feature model, and nine configurations, as well as the library example used in the evaluation.
+The conceptual framework in \autoref{ch:Concept} details the feature annotations, derivation of the rule set, procedures for both full and selective migration, and the preservation process.
+The implementation described in \autoref{ch:Implementation} includes the preprocessor, migration tool, testing procedures, and the matrix run that generates the majority of evaluated data.
+The evaluation in \autoref{ch:Evaluation} addresses the research questions formulated in the Goal-Question-Metric (GQM) plan.
+Finally, \autoref{ch:Conclusion} summarizes the main findings, while \autoref{ch:FutureWork} proposes directions for future research.

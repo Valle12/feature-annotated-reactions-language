@@ -1,0 +1,39 @@
+package catalog;
+
+import java.lang.String;
+
+
+public enum Media {;
+	private java.lang.String title;
+	public java.lang.String getTitle() {
+		return this.title;
+	}
+	public void setTitle(java.lang.String title) {
+		this.title = title;
+	}
+	private int mediaId;
+	public int getMediaId() {
+		return this.mediaId;
+	}
+	public void setMediaId(int mediaId) {
+		this.mediaId = mediaId;
+	}
+	private catalog.MediaType type;
+	public catalog.MediaType getType() {
+		return this.type;
+	}
+	public void setType(catalog.MediaType type) {
+		this.type = type;
+	}
+	private double weight;
+	public double getWeight() {
+		return this.weight;
+	}
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
+	public void describe() {
+	}}
+
+
+

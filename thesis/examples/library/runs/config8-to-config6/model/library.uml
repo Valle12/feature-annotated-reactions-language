@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_9P4rkLIoEfGLJZK_hbgR1A" name="library">
+  <packagedElement xmi:type="uml:Package" xmi:id="_9P4rkbIoEfGLJZK_hbgR1A" name="catalog">
+    <packagedElement xmi:type="uml:Interface" xmi:id="_9P55sbIoEfGLJZK_hbgR1A" name="Identifiable" visibility="public">
+      <ownedOperation xmi:id="_9P7H0LIoEfGLJZK_hbgR1A" name="getId" visibility="public">
+        <ownedParameter xmi:id="_9P7H0bIoEfGLJZK_hbgR1A" type="_9P5SoLIoEfGLJZK_hbgR1A" direction="return"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Interface" xmi:id="_9P55srIoEfGLJZK_hbgR1A" name="Borrowable" visibility="public">
+      <generalization xmi:id="_9P7H0rIoEfGLJZK_hbgR1A" general="_9P55sbIoEfGLJZK_hbgR1A"/>
+      <ownedOperation xmi:id="_9P7H07IoEfGLJZK_hbgR1A" name="borrow" visibility="public">
+        <ownedParameter xmi:id="_9P7u4LIoEfGLJZK_hbgR1A" type="_9P5SobIoEfGLJZK_hbgR1A" direction="return"/>
+        <ownedParameter xmi:id="_9P7u4bIoEfGLJZK_hbgR1A" name="memberId" type="_9P5SoLIoEfGLJZK_hbgR1A"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="_uzN0YbItEfGQm91mey1Wlg" name="MediaType" visibility="public">
+      <ownedLiteral xmi:id="_uzObcLItEfGQm91mey1Wlg" name="BOOK"/>
+      <ownedLiteral xmi:id="_uzObcbItEfGQm91mey1Wlg" name="BLU_RAY"/>
+      <ownedLiteral xmi:id="_uzObcrItEfGQm91mey1Wlg" name="MAGAZINE"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_uzPCgLItEfGQm91mey1Wlg" name="Isbn" visibility="public">
+      <ownedAttribute xmi:id="_uzPCgbItEfGQm91mey1Wlg" name="code" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_uzPpkLItEfGQm91mey1Wlg" name="Media" visibility="public" isAbstract="true">
+      <ownedAttribute xmi:id="_uzQQoLItEfGQm91mey1Wlg" name="title" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_uzQQobItEfGQm91mey1Wlg" name="mediaId" visibility="protected" type="_9P5SoLIoEfGLJZK_hbgR1A"/>
+      <ownedAttribute xmi:id="_uzQQorItEfGQm91mey1Wlg" name="type" visibility="public" type="_uzN0YbItEfGQm91mey1Wlg"/>
+      <ownedAttribute xmi:id="_uzQQo7ItEfGQm91mey1Wlg" name="weight" visibility="public" type="_9P55sLIoEfGLJZK_hbgR1A"/>
+      <interfaceRealization xmi:id="_uzQQpLItEfGQm91mey1Wlg" name="Borrowable" client="_uzPpkLItEfGQm91mey1Wlg" supplier="_9P55srIoEfGLJZK_hbgR1A" contract="_9P55srIoEfGLJZK_hbgR1A"/>
+      <ownedOperation xmi:id="_uzQQpbItEfGQm91mey1Wlg" name="describe" visibility="public">
+        <ownedParameter xmi:id="_uzQ3sLItEfGQm91mey1Wlg" name="returnParameter" direction="return"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_uzRewLItEfGQm91mey1Wlg" name="Book" visibility="public" isAbstract="true">
+      <generalization xmi:id="_uzRewbItEfGQm91mey1Wlg" general="_uzPpkLItEfGQm91mey1Wlg"/>
+      <ownedAttribute xmi:id="_uzRewrItEfGQm91mey1Wlg" name="isbn" visibility="private" type="_uzPCgLItEfGQm91mey1Wlg"/>
+      <ownedAttribute xmi:id="_uzRew7ItEfGQm91mey1Wlg" name="pageCount" visibility="public" type="_9P5SoLIoEfGLJZK_hbgR1A"/>
+      <ownedOperation xmi:id="_uzSF0LItEfGQm91mey1Wlg" name="describe" visibility="public" isLeaf="true">
+        <ownedParameter xmi:id="_uzSF0bItEfGQm91mey1Wlg" name="returnParameter" direction="return"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_uzSF0rItEfGQm91mey1Wlg" name="LibraryCard" visibility="public" isFinalSpecialization="true">
+      <ownedAttribute xmi:id="_uzSF07ItEfGQm91mey1Wlg" name="cardNumber" visibility="public" isStatic="true">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_uzSs4LItEfGQm91mey1Wlg" name="Member" visibility="public">
+      <ownedAttribute xmi:id="_uzSs4bItEfGQm91mey1Wlg" name="name" visibility="public">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_uzSs4rItEfGQm91mey1Wlg" name="active" visibility="public" type="_9P5SobIoEfGLJZK_hbgR1A"/>
+      <ownedAttribute xmi:id="_uzSs47ItEfGQm91mey1Wlg" name="borrowed" visibility="public" type="_uzPpkLItEfGQm91mey1Wlg">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_uzTT8LItEfGQm91mey1Wlg"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_uzTT8bItEfGQm91mey1Wlg" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_uzSs5LItEfGQm91mey1Wlg" name="register" visibility="public" isLeaf="true" isStatic="true">
+        <ownedParameter xmi:id="_uzTT8rItEfGQm91mey1Wlg" name="card" type="_uzSF0rItEfGQm91mey1Wlg"/>
+        <ownedParameter xmi:id="_uzTT87ItEfGQm91mey1Wlg" name="returnParameter" direction="return"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_uzSs5bItEfGQm91mey1Wlg" name="totalWeight" visibility="public">
+        <ownedParameter xmi:id="_uzTT9LItEfGQm91mey1Wlg" type="_9P55sLIoEfGLJZK_hbgR1A" direction="return"/>
+      </ownedOperation>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_9P5SoLIoEfGLJZK_hbgR1A" name="int"/>
+  <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_9P5SobIoEfGLJZK_hbgR1A" name="boolean"/>
+  <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_9P5SorIoEfGLJZK_hbgR1A" name="String"/>
+  <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_9P55sLIoEfGLJZK_hbgR1A" name="double"/>
+  <packagedElement xmi:type="uml:Package" xmi:id="_9agAILIoEfGLJZK_hbgR1A" name="java">
+    <packagedElement xmi:type="uml:Package" xmi:id="_9agnMLIoEfGLJZK_hbgR1A" name="lang">
+      <packagedElement xmi:type="uml:Class" xmi:id="_9akRkLIoEfGLJZK_hbgR1A" name="String"/>
+    </packagedElement>
+  </packagedElement>
+</uml:Model>

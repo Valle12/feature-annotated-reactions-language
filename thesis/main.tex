@@ -1,0 +1,210 @@
+%% LaTeX2e class for student theses
+%% thesis.tex
+%% 
+%% Karlsruhe Institute of Technology
+%% Institute for Program Structures and Data Organization
+%% Chair for Software Design and Quality (SDQ)
+%%
+%% Dr.-Ing. Erik Burger
+%% burger@kit.edu
+%%
+%% See https://sdq.kastel.kit.edu/wiki/Dokumentvorlagen
+%%
+%% Version 1.6, 2024-06-07
+
+%% Available page modes: oneside, twoside
+%% Available languages: english, ngerman
+%% Available modes: draft, final (see README)
+\documentclass[twoside, english, final]{sdqthesis}
+\usepackage{pgfgantt}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{float}
+\usepackage[final]{listings}
+\usepackage{xcolor}
+
+%% Colors of the listings
+\definecolor{lstkeyword}{HTML}{003D99}
+\definecolor{lstannotation}{HTML}{00706B}
+\definecolor{lststring}{HTML}{A31515}
+\definecolor{lstcomment}{HTML}{6E6E6E}
+\definecolor{lstnumber}{HTML}{808080}
+\definecolor{lstframe}{HTML}{B0B0B0}
+
+%% The Reactions Language. The keywords are the terminals of ReactionsLanguage.xtext,
+%% the third class holds the Xbase keywords that occur inside routine bodies.
+\lstdefinelanguage{reactions}{
+  morekeywords={absence, actions, after, and, anychange, as, asserted, at, attribute,
+      call, changes, check, corresponding, create, created, deleted, element, execute,
+      from, import, in, inserted, many, match, names, new, of, optional, plain, qualified,
+      reaction, reactions, removed, replaced, require, retrieve, root, routine, routines,
+      tagged, to, update, using, val, with},
+  morekeywords=[2]{@feature, type},
+  morekeywords=[3]{if, else, var, return, for, while, do, switch, case, default, try,
+      catch, finally, throw, typeof, instanceof, extends, super, this, static, extension,
+      synchronized, true, false, null},
+  alsoletter={@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]{"},
+}
+
+%% Xtend, as far as the test gate listing needs it
+\lstdefinelanguage{xtend}[]{Java}{
+  morekeywords={def, val, var, extension, override, dispatch},
+  morekeywords=[2]{@Test, @RequiresFeatures, @IncompatibleFeatures},
+  alsoletter={@},
+}
+
+%% Only the colors. Layout stays with the options given at each listing.
+\lstset{
+  basicstyle=\ttfamily,
+  keywordstyle=\color{lstkeyword}\bfseries,
+  keywordstyle=[2]\color{lstannotation}\bfseries,
+  keywordstyle=[3]\color{lstkeyword},
+  stringstyle=\color{lststring},
+  commentstyle=\color{lstcomment}\itshape,
+  showstringspaces=false,
+}
+\usepackage{makecell}
+\usepackage{tabularx}
+\usepackage[figuresright]{rotating}
+\usepackage{amsfonts}
+\usepackage{todonotes}
+%% Keep "--" in typewriter text, e.g. command-line flags, as two hyphens instead of an en dash
+\DisableLigatures[-]{encoding = T1, family = tt*}
+%% \autoref for the beginning of a sentence, capitalizing the names hyperref writes in lowercase
+\newcommand*{\Autoref}[1]{%
+  \begingroup
+  \def\chapterautorefname{Chapter}%
+  \def\sectionautorefname{Section}%
+  \def\subsectionautorefname{Subsection}%
+  \def\subsubsectionautorefname{Subsubsection}%
+  \autoref{#1}%
+  \endgroup
+}
+%% ---------------------------------
+%% | Information about the thesis  |
+%% ---------------------------------
+
+%% Name of the author
+\author{Valentin Kaczmarek}
+
+%% Title (and possibly subtitle) of the thesis
+\title{Feature Annotated Reactions Language}
+
+%% Type of the thesis 
+\thesistype{Master Thesis}
+
+%% Change the institute here, ``KASTEL'' is default
+% \myinstitute{Institute for \dots}
+
+%% You can put a logo in the ``logos'' directory and include it here
+%% instead of the SDQ logo
+% \grouplogo{myfile}
+%% Alternatively, you can disable the group logo
+% \nogrouplogo
+
+%% The reviewers are the professors that grade your thesis
+\reviewerone{Prof. Dr. Ralf Reussner}
+\reviewertwo{Prof. Dr.-Ing. Ina Schaefer}
+
+%% The advisors are PhDs or Postdocs
+\advisorone{M.Sc. Fabian Eger}
+\advisortwo{M.Sc. Dirk Neumann}
+
+%% Please enter the start end end time of your thesis
+\editingtime{17. March 2026}{17. September 2026}
+
+%% Please enter the place of residence of the author. This is used on the declarationpage
+\location{Karlsruhe}
+
+\settitle
+
+%% --------------------------------
+%% | Bibliography                 |
+%% --------------------------------
+
+%% Use biber instead of BibTeX, see README
+\usepackage[citestyle=numeric,style=numeric,backend=biber]{biblatex}
+\addbibresource{main.bib}
+
+%% For example texts -- please remove in the final version
+\usepackage{blindtext}
+
+%% ====================================
+%% ====================================
+%% ||                                ||
+%% || Beginning of the main document ||
+%% ||                                ||
+%% ====================================
+%% ====================================
+\begin{document}
+
+%% Set PDF metadata
+\setpdf
+
+%% Title pages and declaration get the labels A-D, so page 1 is the introduction only
+\pagenumbering{Alph}
+
+%% Set the title
+\maketitle
+
+%% Declaration of independent work
+\input{sections/declaration.tex}
+
+%% The Preamble begins here
+\frontmatter
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+
+%% ----------------
+%% |   Abstract   |
+%% ----------------
+
+\input{sections/abstract.tex}
+\begin{otherlanguage}{ngerman}
+  \input{sections/zusammenfassung.tex}
+\end{otherlanguage}
+
+%% ------------------------------
+%% |   Use of generative AI     |
+%% ------------------------------
+
+\input{sections/useOfGenerativeAI.tex}
+
+%% ------------------------
+%% |   Table of Contents  |
+%% ------------------------
+\tableofcontents
+
+\listoffigures
+\lstlistoflistings
+\listoftables
+
+%% -----------------
+%% |   Main part   |
+%% -----------------
+
+\mainmatter
+
+\input{sections/introduction.tex}
+\input{sections/foundation.tex}
+\input{sections/relatedWork.tex}
+\input{sections/runningExample.tex}
+\input{sections/concept.tex}
+\input{sections/implementation.tex}
+\input{sections/evaluation.tex}
+\input{sections/conclusion.tex}
+\input{sections/futureWork.tex}
+
+%% --------------------
+%% |   Bibliography   |
+%% --------------------
+
+%% Add entry to the table of contents for the bibliography
+\printbibliography[heading=bibintoc]
+
+\end{document}

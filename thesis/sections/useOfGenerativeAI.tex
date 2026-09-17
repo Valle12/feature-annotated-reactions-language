@@ -1,0 +1,12 @@
+\chapter*{Use of generative AI}
+\addcontentsline{toc}{chapter}{Use of generative AI}
+\label{ch:UseOfGenerativeAI}
+
+Claude Code by Anthropic assisted in the development of two components of the codebase utilized in this thesis.
+The first component, developed with the assistance of the Claude Opus 4.8 model, manages operations involving jar files.
+The \texttt{spec} package within the migration process opens the jar file of a compiled rule set and instantiates the contained change propagation specifications \cite{vitruv-dsls-spec-package}.
+\texttt{ReactionsServerLauncher} serves as the primary class of the language server jar, while \texttt{ReactionsLanguageIdeSetup} registers the metamodels included in the jar \cite{vitruv-dsls-ide-package}.
+The build process for the Visual Studio Code extension packages this jar, and the extension launches it alongside additional metamodel jars \cite{vitruv-dsls-vscode-plugin}.
+The second component, developed with the assistance of the Claude Opus 5 model, consists of the scripts located in the \texttt{utils} folder of \cite{thesis-repo}, as listed in \autoref{table:evaluation-scripts}.
+This component also includes \texttt{generate-config-matrix}, \texttt{generate-selection-matrix}, and the scripts in the \texttt{reversibility} folder of \cite{vitruv-dsls-fork}, which generate the evaluated data.
+All generated code underwent review prior to its utilization.

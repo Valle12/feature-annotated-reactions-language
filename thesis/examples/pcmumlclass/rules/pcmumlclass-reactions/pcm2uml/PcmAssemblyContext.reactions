@@ -1,0 +1,164 @@
+import org.eclipse.uml2.uml.Property
+import tools.vitruv.applications.pcmumlclass.TagLiterals
+
+import "http://www.eclipse.org/uml2/5.0.0/UML" as uml
+import "http://palladiosimulator.org/PalladioComponentModel/5.2" as pcm
+
+//	The following reactions and routines synchronize a pcm::AssemblyContext in a pcm::ComposedProvidingRequiringEntity (CPRE)
+//	with a uml::Property in the implementation uml::Class to the CPRE.
+//
+// 	The correspondence is instantiated from this side when the pcm::AssemblyContext is inserted.
+//	The correspondence is deleted when the pcm::AssemblyContext is deleted.
+//
+//	Related files: 
+//		UmlAssemblyContextProperty.reactions
+//		AssemblyContextConceptTest
+reactions: pcmAssemblyContextReactions
+in reaction to changes in pcm
+execute actions in uml
+
+reaction AssemblyContextInserted {
+	after element pcm::AssemblyContext inserted in pcm::ComposedProvidingRequiringEntity[assemblyContexts__ComposedStructure]
+	with affectedEObject.assemblyContexts__ComposedStructure.contains(newValue)
+	call insertCorrespondingAssemblyContextProperty(newValue, affectedEObject)
+}
+
+routine insertCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, pcm::ComposedProvidingRequiringEntity pcmComposite) {
+	update {
+		detectOrCreateCorrespondingAssemblyContextProperty(pcmAssembly, pcmComposite)
+		moveCorrespondingAssemblyContextProperty(pcmAssembly, pcmComposite)
+	}
+}
+
+routine detectOrCreateCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, pcm::ComposedProvidingRequiringEntity pcmComposite) {
+	match {
+		val umlCompositeImplementation = retrieve uml::Class corresponding to pcmComposite tagged TagLiterals.
+			IPRE__IMPLEMENTATION
+		require absence of uml::Property corresponding to pcmAssembly tagged TagLiterals.ASSEMBLY_CONTEXT__PROPERTY
+		val umlComponentImplementation = retrieve optional uml::Class corresponding to pcmAssembly.
+			encapsulatedComponent__AssemblyContext tagged TagLiterals.IPRE__IMPLEMENTATION
+	}
+	update {
+		val Property umlPropertyCandidate = umlCompositeImplementation.ownedAttributes.findFirst [
+			name == pcmAssembly.entityName
+		]
+		if (umlPropertyCandidate === null) {
+			createCorrespondingAssemblyContextProperty(pcmAssembly, pcmComposite)
+		} else {
+			addCorrespondenceForExistingAssemblyContextProperty(pcmAssembly, umlPropertyCandidate)
+		}
+	}
+}
+
+routine createCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, pcm::ComposedProvidingRequiringEntity pcmComposite) {
+	match {
+		val umlCompositeImplementation = retrieve uml::Class corresponding to pcmComposite tagged TagLiterals.
+			IPRE__IMPLEMENTATION
+		require absence of uml::Property corresponding to pcmAssembly tagged TagLiterals.ASSEMBLY_CONTEXT__PROPERTY
+		val umlInnerComponent = retrieve optional uml::Class corresponding to pcmAssembly.
+			encapsulatedComponent__AssemblyContext tagged TagLiterals.IPRE__IMPLEMENTATION
+	}
+	create {
+		val umlProperty = new uml::Property
+	}
+	update {
+		umlProperty.name = pcmAssembly.entityName
+		addCorrespondenceBetween(pcmAssembly, umlProperty, TagLiterals.ASSEMBLY_CONTEXT__PROPERTY)
+		changeTypeOfCorrespondingAssemblyContextProperty(pcmAssembly,
+			pcmAssembly.encapsulatedComponent__AssemblyContext)
+	}
+}
+
+routine changeTypeOfCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, pcm::RepositoryComponent pcmComonent) {
+	match {
+		val umlProperty = retrieve uml::Property corresponding to pcmAssembly tagged TagLiterals.
+			ASSEMBLY_CONTEXT__PROPERTY
+		val umlComponentImplementation = retrieve optional uml::Class corresponding to pcmComonent tagged TagLiterals.
+			IPRE__IMPLEMENTATION
+	}
+	update {
+		umlProperty.type = umlComponentImplementation.orElse(null)
+	}
+}
+
+routine addCorrespondenceForExistingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, uml::Property umlProperty) {
+	match {
+		require absence of uml::Property corresponding to pcmAssembly tagged TagLiterals.ASSEMBLY_CONTEXT__PROPERTY
+		require absence of pcm::AssemblyContext corresponding to umlProperty tagged TagLiterals.
+			ASSEMBLY_CONTEXT__PROPERTY
+	}
+	update {
+		addCorrespondenceBetween(pcmAssembly, umlProperty, TagLiterals.ASSEMBLY_CONTEXT__PROPERTY)
+	}
+}
+
+routine moveCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, pcm::ComposedProvidingRequiringEntity pcmComposite) {
+	match {
+		val umlCompositeImplementation = retrieve uml::Class corresponding to pcmComposite tagged TagLiterals.
+			IPRE__IMPLEMENTATION
+		val umlProperty = retrieve uml::Property corresponding to pcmAssembly tagged TagLiterals.
+			ASSEMBLY_CONTEXT__PROPERTY
+	}
+	update {
+		umlCompositeImplementation.ownedAttributes += umlProperty
+	}
+}
+
+reaction AssemblyContextRemoved {
+	after element pcm::AssemblyContext removed from pcm::ComposedProvidingRequiringEntity[assemblyContexts__ComposedStructure]
+	with !affectedEObject.assemblyContexts__ComposedStructure.contains(oldValue)
+	call removeCorrespondingAssemblyContextProperty(oldValue, affectedEObject)
+}
+
+routine removeCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, pcm::ComposedProvidingRequiringEntity pcmComposite) {
+	match {
+		val umlCompositeImplementation = retrieve uml::Class corresponding to pcmComposite tagged TagLiterals.
+			IPRE__IMPLEMENTATION
+		val umlProperty = retrieve uml::Property corresponding to pcmAssembly tagged TagLiterals.
+			ASSEMBLY_CONTEXT__PROPERTY
+	}
+	update {
+		umlCompositeImplementation.ownedAttributes -= umlProperty
+	}
+}
+
+reaction AssemblyContextDeleted {
+	after element pcm::AssemblyContext deleted
+	call deleteCorrespondingAssemblyContextProperty(affectedEObject)
+}
+
+routine deleteCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly) {
+	match {
+		val umlProperty = retrieve uml::Property corresponding to pcmAssembly tagged TagLiterals.
+			ASSEMBLY_CONTEXT__PROPERTY
+	}
+	update {
+		removeObject(umlProperty)
+		removeCorrespondenceBetween(pcmAssembly, umlProperty, TagLiterals.ASSEMBLY_CONTEXT__PROPERTY)
+	}
+}
+
+reaction AssemblyContextNameChanged {
+	after attribute replaced at pcm::AssemblyContext[entityName]
+	with affectedEObject.entityName == newValue
+	call changeNameOfCorrespondingAssemblyContextProperty(affectedEObject, newValue)
+}
+
+routine changeNameOfCorrespondingAssemblyContextProperty(pcm::AssemblyContext pcmAssembly, String newName) {
+	match {
+		val umlProperty = retrieve uml::Property corresponding to pcmAssembly tagged TagLiterals.
+			ASSEMBLY_CONTEXT__PROPERTY
+	}
+	update {
+		umlProperty.name = newName
+	}
+}
+
+reaction AssemblyContextComponentChanged {
+	after element pcm::RepositoryComponent replaced at pcm::AssemblyContext[encapsulatedComponent__AssemblyContext]
+	with {
+		affectedEObject.encapsulatedComponent__AssemblyContext === newValue
+	}
+	call changeTypeOfCorrespondingAssemblyContextProperty(affectedEObject, newValue)
+}
+

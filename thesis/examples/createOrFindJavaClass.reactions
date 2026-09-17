@@ -1,0 +1,14 @@
+routine createOrFindJavaClass(uml::Classifier umlClassifier) {
+  match {
+    require absence of java::ConcreteClassifier corresponding to umlClassifier
+    val javaPackage = retrieve optional java::Package corresponding to 
+      umlClassifier.eContainer
+  }
+  update {
+    if (javaPackage.isPresent) {
+      createOrFindJavaClassInPackage(umlClassifier, javaPackage.get)
+    } else {
+      createJavaClass(umlClassifier)
+    }
+  }
+}

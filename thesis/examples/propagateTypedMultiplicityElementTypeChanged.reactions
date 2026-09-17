@@ -1,0 +1,19 @@
+routine propagateTypedMultiplicityElementTypeChanged( ... ) {
+  match { ... }
+  update {
+    ...
+    if (isCollectionTypeReference(jElement.typeReference)) {
+      // reuse previously selected CollectionType
+      val collectionClassifier = getNormalizedClassifierFromTypeReference(
+        jElement.typeReference) as ConcreteClassifier
+      typeReference = createCollectionTypeReference(
+        collectionClassifier, typeReference)
+    } else {
+      // no previously selected CollectionType
+      val Class<?> collectionType = userSelectCollectionType(userInteractor)
+      typeReference = createCollectionTypeReference(
+        collectionType, typeReference)
+    }
+    ...
+  }
+}

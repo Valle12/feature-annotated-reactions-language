@@ -1,0 +1,8 @@
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QAn architect wants to change the attribute from balance to accountBalance in UML and two reactions are triggered through that.\\E$"}
+{"rule":"POSSESSIVE_APOSTROPHE","sentence":"^\\QRight now, there is no way to express this in the reactions language.\\E$"}
+{"rule":"POSSESSIVE_APOSTROPHE","sentence":"^\\QLast but not least, we already have some code in the repo for handling manual user interactions, which can help further define the reactions behavior, but is not yet implemented in the language itself.\\E$"}
+{"rule":"POSSESSIVE_APOSTROPHE","sentence":"^\\QThe goal of the thesis is to enhance the reactions language with feature annotations to get rid of the problems mentioned in \\E(?:Dummy|Ina|Jimmy-|Dummy-|Maniquí-|Maniquíes-|Dummy\\+|Dummy's\\+)[0-9]+\\Q.\\E$"}
+{"rule":"POSSESSIVE_APOSTROPHE","sentence":"^\\QWhat parts of the reactions language can be enhanced with feature annotations?\\E$"}
+{"rule":"BEEN_PART_AGREEMENT","sentence":"^\\QA routine has three phases, which are check, create and update.\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QBarkowsky and Giese \\E(?:Dummy|Ina|Jimmy-|Dummy-|Maniquí-|Maniquíes-|Dummy\\+|Dummy's\\+)[0-9]+\\Q present an approach to use Triple Graph Grammars (TGGs) to define transformations on multi-version models with the promise of increased performance.\\E$"}
+{"rule":"POSSESSIVE_APOSTROPHE","sentence":"^\\QIn the following chapter I want to introduce the proposed steps and changes required to expand the existing reactions language.\\E$"}

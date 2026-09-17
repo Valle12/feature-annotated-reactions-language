@@ -1,0 +1,170 @@
+specific code paths of the preprocessor and the migration (M5.2)
+Recorded: 2026-09-16 | Vitruv-DSLs main sources as of 34b3b5b9, no uncommitted changes | utils/count-specific-code-paths.py
+
+Vitruv-DSLs at 34b3b5b9, 0 modified source file(s) under the counted folders
+
+== preprocessor: lines of code per file
+   178  tools/vitruv/reactions/preprocessor/extractor/FeatureExtractor.java
+    34  tools/vitruv/reactions/preprocessor/Main.java
+   104  tools/vitruv/reactions/preprocessor/mapping/BlockMapper.java
+     9  tools/vitruv/reactions/preprocessor/mapping/JsonMapper.java
+     2  tools/vitruv/reactions/preprocessor/model/BlockIndex.java
+     4  tools/vitruv/reactions/preprocessor/model/CodeBlocks.java
+     2  tools/vitruv/reactions/preprocessor/model/Header.java
+     2  tools/vitruv/reactions/preprocessor/model/ReactionsFile.java
+    10  tools/vitruv/reactions/preprocessor/model/ReactionsUtils.java
+    26  tools/vitruv/reactions/preprocessor/reader/ConfigReader.java
+    52  tools/vitruv/reactions/preprocessor/reader/ReactionsReader.java
+    18  tools/vitruv/reactions/preprocessor/reader/TextReader.java
+   441  total in 12 file(s)
+
+== preprocessor: imports of metamodel or case-study packages per file
+(none)
+
+== preprocessor: instanceof checks against classes of those packages
+(none)
+(0 instanceof checks in all)
+
+== preprocessor: lines naming a rule set or a metamodel (imports and package lines excluded)
+(none)
+(0 code line(s), 0 comment line(s))
+
+== preprocessor: text patterns of the reactions language it matches
+tools/vitruv/reactions/preprocessor/extractor/FeatureExtractor.java:32  (\\w+)(?:\\.(\\w+))?
+tools/vitruv/reactions/preprocessor/extractor/FeatureExtractor.java:34  ^\\s*import\\s+(?:routines\\s+)?(\\w+)[ \\t]*(?://[^\\n]*)?\\r?$
+tools/vitruv/reactions/preprocessor/mapping/BlockMapper.java:22  @feature\\s*\\(\\s*type\\s*=\\s*\"([^\"\\n]+)\"[^)\\n]*\\)\\s*(reaction)\\s*\\w+\\s*\\{
+tools/vitruv/reactions/preprocessor/mapping/BlockMapper.java:25  (routine)\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{
+tools/vitruv/reactions/preprocessor/mapping/BlockMapper.java:27  @feature\\(type\\s*=\\s*\"[^\"\\n]+\"\\)
+tools/vitruv/reactions/preprocessor/mapping/BlockMapper.java:29  reaction(?:\\s*\\w+)?\\s*\\{
+tools/vitruv/reactions/preprocessor/mapping/BlockMapper.java:31  routine(?:\\s*\\w+)?\\s*\\(
+tools/vitruv/reactions/preprocessor/mapping/BlockMapper.java:32  reactions: (\\w*)
+(8 pattern(s))
+
+== migration: lines of code per package
+   323    6 file(s)  tools/vitruv/dsls/reactions/migration/adapter
+   272    5 file(s)  tools/vitruv/dsls/reactions/migration/cli
+   166    5 file(s)  tools/vitruv/dsls/reactions/migration/graph
+   160    3 file(s)  tools/vitruv/dsls/reactions/migration/interaction
+   326    1 file(s)  tools/vitruv/dsls/reactions/migration
+  2811   31 file(s)  tools/vitruv/dsls/reactions/migration/migration
+  2335   30 file(s)  tools/vitruv/dsls/reactions/migration/preservation
+   222    3 file(s)  tools/vitruv/dsls/reactions/migration/spec
+   148    6 file(s)  tools/vitruv/dsls/reactions/migration/strategy
+   423    8 file(s)  tools/vitruv/dsls/reactions/migration/vsum
+  7186   98 file(s)  total
+
+== migration adapter package: lines of code per file
+    80  tools/vitruv/dsls/reactions/migration/adapter/AdapterRegistry.java
+     7  tools/vitruv/dsls/reactions/migration/adapter/DefaultModelAdapter.java
+   161  tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java
+    29  tools/vitruv/dsls/reactions/migration/adapter/LayoutFreeJavaResource.java
+    32  tools/vitruv/dsls/reactions/migration/adapter/MetamodelAdapter.java
+    14  tools/vitruv/dsls/reactions/migration/adapter/ResourcePaths.java
+   323  total in 6 file(s)
+
+== migration: imports of metamodel or case-study packages per file
+tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java
+    org.emftext.language.java.JavaClasspath
+    org.emftext.language.java.classifiers.ConcreteClassifier
+    org.emftext.language.java.containers.CompilationUnit
+    org.emftext.language.java.containers.Package
+    org.emftext.language.java.resource.java.IJavaOptions
+    tools.vitruv.applications.util.temporary.java.JavaSetup
+tools/vitruv/dsls/reactions/migration/adapter/LayoutFreeJavaResource.java
+    org.emftext.language.java.resource.JavaSourceOrClassFileResource
+    org.emftext.language.java.resource.java.IJavaOptions
+
+== migration: instanceof checks against classes of those packages
+tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:67  instanceof ConcreteClassifier
+tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:100  instanceof Package
+tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:122  instanceof CompilationUnit
+tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:167  instanceof ConcreteClassifier
+(41 instanceof checks in all)
+
+== migration: lines naming a rule set or a metamodel (imports and package lines excluded)
+comment  tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:26  * Adapts the migration to the JaMoPP representation of Java. A Java model is kept as source
+code     tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:33  private static final String JAMOPP_NS_PREFIX = "http://www.emftext.org/java";
+code     tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:36  private static final String JAVA_FILE_EXTENSION = "java";
+code     tools/vitruv/dsls/reactions/migration/adapter/JavaModelAdapter.java:37  private static final Set<String> PLATFORM_PACKAGE_ROOTS = Set.of("java", "javax", "sun", "jdk");
+comment  tools/vitruv/dsls/reactions/migration/adapter/LayoutFreeJavaResource.java:11  * A JaMoPP resource that records no layout information, so that a file written back from it
+comment  tools/vitruv/dsls/reactions/migration/adapter/MetamodelAdapter.java:97  * owns, such as the standard library a Java model resolves its types against.
+code     tools/vitruv/dsls/reactions/migration/cli/CommandLine.java:43  e.g. uml or java (required iff strategy=explicit)
+comment  tools/vitruv/dsls/reactions/migration/strategy/ExplicitDominance.java:16  * @param token a metamodel token such as {@code uml} or {@code java}, matched without regard
+(4 code line(s), 4 comment line(s))
+
+== migration: hooks of MetamodelAdapter and the adapters overriding them
+hook                        kind      DefaultModelAdapter  JavaModelAdapter  
+handles                     required  yes                 yes               
+prepareStandalone           optional  -                   yes               
+loadOptions                 optional  -                   yes               
+dropResolutionCaches        optional  -                   yes               
+prepareForReplayInto        optional  -                   yes               
+normalizeLoadedResource     optional  -                   yes               
+refreshSerializedForm       optional  -                   yes               
+requiresChangeRecording     optional  -                   yes               
+claimsResource              optional  -                   yes               
+isPlatformLibraryResource   optional  -                   yes               
+externalIdentityOf          optional  -                   yes               
+overridden                            1                   11                
+(11 hooks, 10 optional)
+
+== migration: call sites of the hooks outside the adapter package
+handles: 0 site(s)
+prepareStandalone: 1 site(s)
+    tools/vitruv/dsls/reactions/migration/vsum/Vsums.java:103  adapters.prepareStandalone
+loadOptions: 5 site(s)
+    tools/vitruv/dsls/reactions/migration/migration/ModelStates.java:25  adapters.newResourceSet
+    tools/vitruv/dsls/reactions/migration/migration/ModelStates.java:37  adapters.newResourceSet
+    tools/vitruv/dsls/reactions/migration/migration/SourceUpdater.java:243  adapters.newResourceSet
+    tools/vitruv/dsls/reactions/migration/preservation/VsumState.java:51  adapters.newResourceSet
+    tools/vitruv/dsls/reactions/migration/vsum/ModelSnapshot.java:40  adapters.newResourceSet
+dropResolutionCaches: 3 site(s)
+    tools/vitruv/dsls/reactions/migration/migration/MigrationRunner.java:573  adapterFor(...).dropResolutionCaches
+    tools/vitruv/dsls/reactions/migration/migration/ModelStates.java:91  adapterFor(...).dropResolutionCaches
+    tools/vitruv/dsls/reactions/migration/vsum/ModelSnapshot.java:51  adapterFor(...).dropResolutionCaches
+prepareForReplayInto: 2 site(s)
+    tools/vitruv/dsls/reactions/migration/migration/SourceUpdater.java:324  adapterFor(...).prepareForReplayInto
+    tools/vitruv/dsls/reactions/migration/preservation/TransplantApplier.java:436  adapterFor(...).prepareForReplayInto
+normalizeLoadedResource: 4 site(s)
+    tools/vitruv/dsls/reactions/migration/migration/ModelStates.java:27  adapters.load
+    tools/vitruv/dsls/reactions/migration/migration/ModelStates.java:40  adapters.load
+    tools/vitruv/dsls/reactions/migration/migration/SourceUpdater.java:246  adapters.load
+    tools/vitruv/dsls/reactions/migration/preservation/VsumState.java:61  adapters.load
+refreshSerializedForm: 1 site(s)
+    tools/vitruv/dsls/reactions/migration/migration/MigrationRunner.java:581  adapterFor(...).refreshSerializedForm
+requiresChangeRecording: 3 site(s)
+    tools/vitruv/dsls/reactions/migration/migration/Replayer.java:52  adapters.anyRootRequiresChangeRecording
+    tools/vitruv/dsls/reactions/migration/migration/SourceUpdater.java:265  adapterFor(...).requiresChangeRecording
+    tools/vitruv/dsls/reactions/migration/migration/SourceUpdater.java:319  adapterFor(...).requiresChangeRecording
+claimsResource: 0 site(s)
+isPlatformLibraryResource: 10 site(s)
+    tools/vitruv/dsls/reactions/migration/migration/MigrationRunner.java:558  adapters.isMigratedModel
+    tools/vitruv/dsls/reactions/migration/migration/MigrationRunner.java:849  adapters.isMigratedModel
+    tools/vitruv/dsls/reactions/migration/migration/NotRepropagated.java:114  adapters.isMigratedModel
+    tools/vitruv/dsls/reactions/migration/migration/RunnerContext.java:86  adapters.isPlatformLibraryResource
+    tools/vitruv/dsls/reactions/migration/migration/SelectiveRepropagation.java:87  adapters.isMigratedModel
+    tools/vitruv/dsls/reactions/migration/migration/SelectiveRepropagation.java:162  adapters.isMigratedModel
+    tools/vitruv/dsls/reactions/migration/migration/SourceUpdater.java:341  adapters.isMigratedModel
+    tools/vitruv/dsls/reactions/migration/preservation/ModelFiles.java:45  adapters.isPlatformLibraryResource
+    tools/vitruv/dsls/reactions/migration/vsum/ModelSnapshot.java:45  adapters.isMigratedModel
+    tools/vitruv/dsls/reactions/migration/vsum/UuidPreRegistration.java:51  adapters.isMigratedModel
+externalIdentityOf: 1 site(s)
+    tools/vitruv/dsls/reactions/migration/preservation/ExternalTargets.java:29  adapters.externalIdentityOf
+(30 call site(s) in 14 file(s))
+
+== migration tests: metamodel packages imported, with the number of test files
+  15  pcm_mockup
+  14  tools.vitruv.applications.util
+  14  uml_mockup
+   9  allElementTypes
+   8  tools.vitruv.applications.umljava
+   7  org.eclipse.uml2
+   4  org.emftext
+   2  allElementTypes2
+   2  mir
+   2  tools.vitruv.applications.pcmumlclass
+   1  brakesystem
+   1  org.palladiosimulator
+   1  simulink
+(83 test source file(s))
+

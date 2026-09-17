@@ -1,0 +1,47 @@
+Preprocessing overhead of config1 (M1.5)
+
+Vitruv-DSLs          34b3b5b9 (clean)  E:/projects/Vitruv-DSLs
+Vitruv-CaseStudies   d202c5b41 (clean)  E:/projects/VS Code/Vitruv-CaseStudies
+Java                 openjdk version "21.0.12" 2026-07-21 LTS
+Processor            Intel(R) Core(TM) i9-9900K CPU @ 3.60GHz, 16 logical processors, Windows 11
+Scratch folder       C:/Users/Valentin/AppData/Local/Temp/preprocessing-overhead-0yv4_u3o
+Started              2026-09-16 19:19:52
+
+Setup, not timed
+  build the preprocessor: 3.2 s
+  resolve its classpath: 3.0 s
+  derive pcmumlclass: 0.8 s
+  install util.temporary,testutility,testutility.integration: 52.4 s
+
+Preprocessing config1, 100 runs, one JVM each, seconds
+    1- 10  0.657  0.621  0.672  0.706  0.712  0.623  0.623  0.622  0.632  0.625
+   11- 20  0.631  0.630  0.629  0.613  0.630  0.641  0.624  0.628  0.614  0.629
+   21- 30  0.611  0.629  0.642  0.627  0.644  0.625  0.631  0.617  0.627  0.641
+   31- 40  0.624  0.615  0.628  0.611  0.626  0.629  0.625  0.630  0.612  0.629
+   41- 50  0.625  0.628  0.626  0.624  0.612  0.623  0.626  0.641  0.639  0.626
+   51- 60  0.630  0.612  0.614  0.625  0.630  0.641  0.630  0.613  0.631  0.630
+   61- 70  0.614  0.629  0.628  0.629  0.627  0.613  0.613  0.627  0.625  0.628
+   71- 80  0.615  0.627  0.615  0.634  0.626  0.627  0.627  0.628  0.625  0.624
+   81- 90  0.625  0.624  0.628  0.632  0.631  0.629  0.612  0.624  0.645  0.623
+   91-100  0.631  0.641  0.625  0.614  0.628  0.627  0.613  0.629  0.641  0.627
+  derived config1: 10 files, 2543 lines of code
+
+Building and testing umljava against config1, 10 runs of mvnw -pl umljava clean test
+   1   114.5  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:53 min)
+   2   111.7  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:50 min)
+   3   112.8  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:51 min)
+   4   110.6  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:49 min)
+   5   113.7  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:52 min)
+   6   112.3  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:50 min)
+   7   113.4  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:51 min)
+   8   111.0  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:49 min)
+   9   116.5  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:54 min)
+  10   115.1  BUILD SUCCESS  tests 189, failures 0, errors 0, skipped 0  (Maven total time 01:53 min)
+
+Summary, seconds
+                            runs      mean    median       min       max
+  preprocessing config1      100     0.628     0.627     0.611     0.712
+  build and test umljava      10     113.2     113.1     110.6     116.5
+  share of preprocessing in preprocessing plus build and test: 0.55% of the means, 0.55% of the medians
+
+Finished             2026-09-16 19:40:47

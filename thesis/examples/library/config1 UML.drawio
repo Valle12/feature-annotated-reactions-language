@@ -1,0 +1,144 @@
+<mxfile host="Electron">
+  <diagram name="Library UML" id="library-uml-source">
+    <mxGraphModel dx="1689" dy="996" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="828" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pkg" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=80;tabHeight=20;tabPosition=left;html=1;verticalAlign=top;align=left;spacingLeft=8;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;catalog" vertex="1">
+          <mxGeometry height="720" width="740" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ident" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;" value="«interface»&#xa;Identifiable" vertex="1">
+          <mxGeometry height="70" width="220" x="100" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ident1" parent="ident" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ getId() : int" vertex="1">
+          <mxGeometry height="26" width="220" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="borrow" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;" value="«interface»&#xa;Borrowable" vertex="1">
+          <mxGeometry height="70" width="220" x="100" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="borrow1" parent="borrow" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ borrow(memberId : int) : boolean" vertex="1">
+          <mxGeometry height="26" width="220" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" value="«enumeration»&#xa;MediaType" vertex="1">
+          <mxGeometry height="122" width="200" x="440" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype1" parent="mtype" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="BOOK" vertex="1">
+          <mxGeometry height="26" width="200" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype2" parent="mtype" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="BLU_RAY" vertex="1">
+          <mxGeometry height="26" width="200" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype3" parent="mtype" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="MAGAZINE" vertex="1">
+          <mxGeometry height="26" width="200" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="isbn" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;" value="«dataType»&#xa;Isbn" vertex="1">
+          <mxGeometry height="70" width="200" x="440" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="isbn1" parent="isbn" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ code : String" vertex="1">
+          <mxGeometry height="26" width="200" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="media" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;i&gt;Media&lt;/i&gt;&#xa;{abstract}" vertex="1">
+          <mxGeometry height="174" width="260" x="80" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="media1" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ title : String" vertex="1">
+          <mxGeometry height="26" width="260" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="media2" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="# mediaId : int" vertex="1">
+          <mxGeometry height="26" width="260" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="media3" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ type : MediaType" vertex="1">
+          <mxGeometry height="26" width="260" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="media5" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ weight : double" vertex="1">
+          <mxGeometry height="26" width="260" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="media4" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ describe() : void" vertex="1">
+          <mxGeometry height="26" width="260" y="148" as="geometry" />
+        </mxCell>
+        <mxCell id="book" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;i&gt;Book&lt;/i&gt;&#xa;{abstract}" vertex="1">
+          <mxGeometry height="122" width="260" x="80" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="book1" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="&amp;nbsp;- isbn : Isbn" vertex="1">
+          <mxGeometry height="26" width="260" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="book2" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ pageCount : int" vertex="1">
+          <mxGeometry height="26" width="260" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="book3" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ describe() : void {leaf}" vertex="1">
+          <mxGeometry height="26" width="260" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="card" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="LibraryCard&#xa;{final}" vertex="1">
+          <mxGeometry height="70" width="280" x="450" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="card1" parent="card" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ cardNumber : String {static}" vertex="1">
+          <mxGeometry height="26" width="280" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="member" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Member" vertex="1">
+          <mxGeometry height="160" width="300" x="440" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="member1" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ name : String" vertex="1">
+          <mxGeometry height="26" width="300" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="member2" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ active : boolean" vertex="1">
+          <mxGeometry height="26" width="300" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="member3" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ borrowed : Media [0..*]" vertex="1">
+          <mxGeometry height="26" width="300" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="member4" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ register(card : LibraryCard) : void {static}" vertex="1">
+          <mxGeometry height="26" width="300" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="member5" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ totalWeight() : double" vertex="1">
+          <mxGeometry height="26" width="300" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="borrow" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;endSize=12;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="ident">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1l" connectable="0" parent="e1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="generalization" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="media" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;endSize=12;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="borrow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2l" connectable="0" parent="e2" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="interfaceRealization" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="book" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;endSize=12;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="media">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3l" connectable="0" parent="e3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="generalization" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="media3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="mtype">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4l" connectable="0" parent="e4" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="attribute type" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="book1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="isbn">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="657" />
+              <mxPoint x="470" y="657" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5l" connectable="0" parent="e5" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="attribute type" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="member3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="media">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6l" connectable="0" parent="e6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="0..*" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="member" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="card">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7l" connectable="0" parent="e7" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="parameter type" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,169 @@
+<mxfile host="Electron">
+  <diagram name="Library Java config1" id="library-java-config1">
+    <mxGraphModel dx="1689" dy="996" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="960" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pkg" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=200;tabHeight=20;tabPosition=left;html=1;verticalAlign=top;align=left;spacingLeft=8;" value="src/catalog  (package-info.java)" vertex="1">
+          <mxGeometry height="910" width="730" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ident" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;" value="«interface»&#xa;Identifiable" vertex="1">
+          <mxGeometry height="70" width="230" x="110" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ident1" parent="ident" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ int getId()" vertex="1">
+          <mxGeometry height="26" width="230" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="borrow" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;" value="«interface»&#xa;Borrowable" vertex="1">
+          <mxGeometry height="70" width="230" x="110" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="borrow1" parent="borrow" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ boolean borrow(int memberId)" vertex="1">
+          <mxGeometry height="26" width="230" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=44;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" value="«enum»&#xa;MediaType" vertex="1">
+          <mxGeometry height="122" width="200" x="395" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype1" parent="mtype" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="BOOK" vertex="1">
+          <mxGeometry height="26" width="200" y="44" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype2" parent="mtype" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="BLU_RAY" vertex="1">
+          <mxGeometry height="26" width="200" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="mtype3" parent="mtype" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="MAGAZINE" vertex="1">
+          <mxGeometry height="26" width="200" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="isbn" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;" value="Isbn" vertex="1">
+          <mxGeometry height="108" width="240" x="395" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="isbn1" parent="isbn" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ String code" vertex="1">
+          <mxGeometry height="26" width="240" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="isbn2" parent="isbn" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ String getCode()" vertex="1">
+          <mxGeometry height="26" width="240" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="isbn3" parent="isbn" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setCode(String)" vertex="1">
+          <mxGeometry height="26" width="240" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="media" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;i&gt;abstract&lt;/i&gt; Media" vertex="1">
+          <mxGeometry height="290" width="290" x="80" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="media1" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ String title" vertex="1">
+          <mxGeometry height="26" width="290" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="media2" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ String getTitle()" vertex="1">
+          <mxGeometry height="26" width="290" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="media3" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setTitle(String)" vertex="1">
+          <mxGeometry height="26" width="290" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="media4" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="# int mediaId" vertex="1">
+          <mxGeometry height="26" width="290" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="media5" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ int getMediaId()" vertex="1">
+          <mxGeometry height="26" width="290" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="media6" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setMediaId(int)" vertex="1">
+          <mxGeometry height="26" width="290" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="media7" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ MediaType type" vertex="1">
+          <mxGeometry height="26" width="290" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="media8" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ MediaType getType()" vertex="1">
+          <mxGeometry height="26" width="290" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="media9" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setType(MediaType)" vertex="1">
+          <mxGeometry height="26" width="290" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="media10" parent="media" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ void describe()" vertex="1">
+          <mxGeometry height="26" width="290" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="book" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;i&gt;abstract&lt;/i&gt; Book" vertex="1">
+          <mxGeometry height="212" width="290" x="80" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="book1" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="&amp;nbsp;- Isbn isbn" vertex="1">
+          <mxGeometry height="26" width="290" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="book2" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ Isbn getIsbn()" vertex="1">
+          <mxGeometry height="26" width="290" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="book3" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setIsbn(Isbn)" vertex="1">
+          <mxGeometry height="26" width="290" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="book4" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ int pageCount" vertex="1">
+          <mxGeometry height="26" width="290" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="book5" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ int getPageCount()" vertex="1">
+          <mxGeometry height="26" width="290" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="book6" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setPageCount(int)" vertex="1">
+          <mxGeometry height="26" width="290" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="book7" parent="book" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ final void describe()" vertex="1">
+          <mxGeometry height="26" width="290" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="card" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;final&lt;/b&gt; LibraryCard" vertex="1">
+          <mxGeometry height="108" width="310" x="395" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="card1" parent="card" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ static String cardNumber" vertex="1">
+          <mxGeometry height="26" width="310" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="card2" parent="card" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ String getCardNumber()" vertex="1">
+          <mxGeometry height="26" width="310" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="card3" parent="card" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setCardNumber(String)" vertex="1">
+          <mxGeometry height="26" width="310" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="member" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Member" vertex="1">
+          <mxGeometry height="290" width="330" x="395" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="member1" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ String name" vertex="1">
+          <mxGeometry height="26" width="330" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="member2" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ String getName()" vertex="1">
+          <mxGeometry height="26" width="330" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="member3" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setName(String)" vertex="1">
+          <mxGeometry height="26" width="330" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="member4" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ boolean active" vertex="1">
+          <mxGeometry height="26" width="330" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="member5" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ boolean getActive()" vertex="1">
+          <mxGeometry height="26" width="330" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="member6" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setActive(boolean)" vertex="1">
+          <mxGeometry height="26" width="330" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="member7" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#B85450;" value="+ ArrayList&amp;lt;Media&amp;gt; borrowed" vertex="1">
+          <mxGeometry height="26" width="330" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="member8" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ ArrayList&amp;lt;Media&amp;gt; getBorrowed()" vertex="1">
+          <mxGeometry height="26" width="330" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="member9" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;fontColor=#7F00FF;" value="+ void setBorrowed(ArrayList&amp;lt;Media&amp;gt;)" vertex="1">
+          <mxGeometry height="26" width="330" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="member10" parent="member" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;overflow=hidden;html=1;" value="+ static void register(LibraryCard card)" vertex="1">
+          <mxGeometry height="26" width="330" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="borrow" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;endSize=12;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="ident">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1l" connectable="0" parent="e1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="extends" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="media" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;endSize=12;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="borrow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2l" connectable="0" parent="e2" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="implements" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="book" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;endSize=12;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="media">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3l" connectable="0" parent="e3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" value="extends" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

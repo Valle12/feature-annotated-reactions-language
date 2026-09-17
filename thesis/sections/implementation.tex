@@ -1,0 +1,302 @@
+\chapter{Implementation}
+\label{ch:Implementation}
+
+This chapter focuses on the implementations required to achieve the concepts laid out in \autoref{ch:Concept} and to create the data required for \autoref{ch:Evaluation}.
+It also describes the problems that arose during the implementation, namely the local build of the Visual Studio Code extension, the loading of persisted V-SUMs and the recording of cascaded deletions in Vitruv-Change.
+Both new modules, the preprocessor and the migration, are implemented in the Vitruv-DSLs repository \cite{vitruv-dsls-fork}.
+While that includes most of the development work, the Vitruv-Change repository \cite{vitruv-change-fork} required changes as well, to realize selective migration and fix some bugs.
+For testing, the case study repository Vitruv-CaseStudies \cite{vitruv-casestudies-fork} was adapted to the new annotations, and its existing unit tests were extended.
+BrakeCaseStudy \cite{brakecasestudy-fork} was changed as well, mainly to port it to a new major version of Vitruvius.
+
+\section{Preprocessor}
+\label{sec:Implementation:Preprocessor}
+
+The first of the two new modules is the preprocessor.
+Feature annotations first require a change to the grammar of the Reactions Language.
+The added grammar rule is \texttt{'@' 'feature' '(' ValidID '=' STRING ')'}.
+In a reactions file, an annotation following this rule reads \texttt{@feature(type = "ClassCreation.Class")}.
+A hardcoded \texttt{type} was not possible in the grammar, as this is a global keyword leading to problems along the way.
+Therefore, \texttt{ValidID} would enable all kinds of valid identifiers.
+To limit that, another validation is added to the already existing ones, only allowing \texttt{type} as a valid identifier.
+The feature names are not supposed to be identifiers, so they are cast as String, requiring quotation marks.
+It is designed to not have a node in the Abstract Syntax Tree, meaning only the preprocessor interacts with the annotations and the resulting 100\% model is still the same as before.
+An extension for Visual Studio Code is created in the repo as well for syntax checks in \texttt{.reactions} files.
+Producing the extension file and using it locally did not really work, as the Language Server Protocol jar was not copied into the result, showing no errors in the file at all.
+A CI/CD build worked, as this step was included in the pipeline, but not in the script creating everything after local changes.
+Thus changing anything and recreating the required package did not change anything in the outcome.
+The build script for that was also adapted to include new changes to actually see annotations being passed as valid syntax.
+Also adding the ability to include external jars, as otherwise imports to those would be shown as errors.
+
+Next was the preprocessor itself to transform a 150\% model to a 100\% model with the help of a given configuration.
+It is purely based on text transformations and does not include any reference to Xtext, Xtend or EMF.
+Using regular expressions to extract blocks of headers, reactions and routines and selecting those required by a specific configuration.
+This configuration is a simple JSON file, listing all contained features producing the specified variant.
+The configuration path is one of the two parameters required for the preprocessing to run, while the path to the 150\% model reactions represent the second option.
+Blocks required will be transitively pulled into the resulting files to include reactions, their routines and routines to different files getting called.
+A routine called from several places is written to its file only once.
+The variant specified by the configuration will be saved in a folder next to the configuration file, so nothing gets overridden in the process.
+As nothing is checked for validity inside the preprocessor, a valid configuration and a 150\% model are hard requirements for preprocessing to work.
+Validity of those has to be ensured by the methodologist using the feature model defined in Vitruv-DSLs \cite{vitruv-dsls-fork}.
+
+To actually use features now, all reactions within Vitruv-CaseStudies \cite{vitruv-casestudies-fork} have been annotated with the corresponding feature annotation.
+Due to the changed syntax of the reactions, the annotated version can no longer be used in tests directly.
+A variable has to be passed to maven to define the location of processed reactions to use.
+With that provided, the tests can run as usual.
+They were designed with no features in mind, so changing configurations was not handled by the tests.
+As some of them test code, which no longer gets produced or causes invalid test behavior, tests need to be adapted to the chosen configuration.
+This is done with specific feature gate annotations for the unit tests.
+
+\lstinputlisting[frame=single, caption={Required features test gate}, label=listing:required-features-test-gate, numbers=left, float=htbp, language=xtend]{examples/feature-gate-required-test.xtend}
+
+Shown in \autoref{listing:required-features-test-gate}, multiple features can be used in a single annotation for the Xtend tests, and the following test will be executed normally, when both features are present.
+You can also define multiple \texttt{@RequiresFeatures} for one unit test, where those are implemented in an \texttt{OR} relation, so even if one fails, it still has a chance to get executed normally.
+When the gate is not satisfied, the case will still get executed rather than being skipped, but it wants a throwable of any kind, expecting actual test failure.
+So in the end all tests for all possible features would still be green.
+Switching the feature gate will show failures and errors revealing if those are actual bugs or just feature incompatibilities.
+Always requiring to define all features that make a test pass can be quite tedious, especially when feature sets grow bigger.
+For that, the inverted variant \texttt{@IncompatibleFeatures} can be used.
+That also defines one annotation as the compound of multiple features, meaning the test would normally only fail, when those features interact with each other.
+Defining multiple annotations expects any of the features to break the test.
+
+\section{Migration}
+\label{sec:Implementation:Migration}
+
+The second new module is the migration.
+Since reactions could not be annotated with features before, no migration between rule sets was required.
+Even though some of the existing examples save the created V-SUM to disk, none of them actually read that back into memory, forcing migration to explore that area as well.
+In the process of migration the library example has to populate a fresh V-SUM, which gets saved to disk to be used after a configuration change, updating the existing model.
+The migration itself can be used as a CLI, with some forced options consisting of \texttt{--model} specifying the path to the persisted V-SUM and \texttt{--propagations} pointing to the compiled reactions jar with the new rules.
+An explicit run is the default requiring \texttt{--dominant} passed as an argument as well, defining what source to pick.
+The rest of that has a default value and can be changed as needed.
+All of that is covered by the \texttt{cli} package.
+The \texttt{spec} package turns a built reactions jar into a runnable \texttt{ChangePropagationSpecification}.
+A jar gets loaded, enabling the comparison between old and new rules.
+The \texttt{graph} package is the base for \texttt{reachability} strategy, as the whole decision is based on the reachability graph created in this package.
+The fewest changes strategy, selected as \texttt{--strategy fewestChanges}, also depends on that, as only nodes that reach everything will be considered for the trial runs.
+Most of the code for the strategies themselves is placed inside the \texttt{strategy} package.
+Loading a persisted V-SUM, reading metadata and providing scratch folders for trial migrations all happens within the \texttt{vsum} package.
+The main logic is covered by the \texttt{migration} package.
+On its own, only correspondences would get migrated, leaving behind underived content.
+To prevent that, the \texttt{preservation} package focuses on that and tries to keep as much as possible.
+It creates a report, focusing on losses, keeps and problems encountered while preserving.
+The \texttt{interaction} package handles user interaction in an automatic migration.
+Recording user interactions happening, supplying deterministic answers and aborting when a user interaction cannot be answered safely.
+A set of adapters to interact with the metamodels is provided within the \texttt{adapter} package.
+Providing a default adapter for EMF metamodels as well as a specific one for Java to handle JaMoPP specific code.
+
+\subsection{Full migration}
+\label{sec:Implementation:Migration:FullMigration}
+
+As mentioned in \autoref{sec:Implementation:Migration} loading a V-SUM is not exercised within the previous examples.
+So approaching that first was necessary to even start with the process of migrating.
+In \texttt{models.models} all model resources saved in the V-SUM are listed as URIs.
+When persisting a V-SUM, all kinds of resources get saved including ones that can cause problems trying to load them.
+This includes archives, which embed the absolute JDK path of the machine that persisted the V-SUM, rendering them invalid on other machines.
+Furthermore, \texttt{pathmap:} can also cause errors, not directly when loading, but after a commit.
+A pathmap is not part of a persisted model, only a placeholder, so when committed it is seen as empty and therefore tried to get deleted which causes an exception.
+So the URIs get updated to only include actual files to prevent those errors.
+
+After that, the persisted V-SUM is loaded with the new reactions, even though its models were created with the old ones.
+Vitruvius itself does not store any information about the rules that created a model, enforcing the need for a migration in the first place.
+The loaded models are grouped by the metamodel they belong to.
+If the V-SUM contains no models at all, there is nothing to migrate and the run stops.
+It also stops if the new reactions are not compatible with these metamodels.
+The next phase is determining which metamodel represents the source side based on the strategies defined in \autoref{sec:Concept:Migration:FullMigration}.
+The chosen dominant model covers every metamodel that the reactions reach from it.
+As long as a metamodel is not covered, the strategy chooses a further dominant model among the uncovered ones.
+Everything that is not a source is a derived model, which the new reactions will create again.
+The source side is then copied as a snapshot, detached from the loaded V-SUM, as that one is closed afterward.
+This copy represents the replay sequence of the concept as the state these changes would produce.
+A copy of the whole V-SUM is kept as well, allowing later phases to compare the old state against the migrated one.
+Afterward, the persisted V-SUM gets deconstructed.
+This happens on the file system directly, as Vitruvius has no way of deleting models without triggering propagation.
+In the replay phase an empty V-SUM is created in the same place, and the source snapshot is inserted into it in a single commit.
+The new reactions see this as a regular change of the source models, resulting in normal propagation flow.
+If the fewest changes strategy already performed a trial migration with this source, its result is used instead of creating the same state a second time.
+
+An optional source update implements the backpropagation described in \autoref{sec:Concept:Migration:FullMigration}, recovering information that only the old derived models carried.
+It works in rounds, each of which builds a scratch V-SUM, a temporary V-SUM with the new rules in a folder of its own.
+The dominant models of the migrated V-SUM are copied into the scratch V-SUM, and the new rules derive the other models from them.
+Then the old derived models, taken from the copy of the V-SUM made before the migration, are committed onto the scratch V-SUM.
+Wherever they differ from the re-derived models, the new rules propagate the difference back into the dominant models of the scratch V-SUM, while the migrated V-SUM stays untouched.
+Afterward, these dominant models are compared with those of the migrated V-SUM by structure rather than by identifiers, and the difference is merged into the migrated V-SUM.
+Rounds repeat until a comparison finds no difference, the difference no longer shrinks or the number of rounds set by \texttt{--max-rounds} is reached.
+
+\subsection{Selective migration}
+\label{sec:Implementation:Migration:SelectiveMigration}
+
+The refined way of migrating a model can detect changes between reaction sets and base the migration around that.
+Thus, only touching elements, which have to change while migrating.
+Enabling this in the first place requires changes to Vitruv-Change\cite{vitruv-change-fork}.
+As discussed in \autoref{sec:Concept:Migration:SelectiveMigration}, two different selection mechanisms are possible.
+IDs for added and removed reactions between different configurations and hash values for changes within existing reactions.
+The trigger is required for both strategies, so all three need to be provided.
+
+\subsubsection{Persisting metadata}
+\label{sec:Implementation:Migration:SelectiveMigration:PersistingMetadata}
+
+The ID was already present in Vitruvius as the \texttt{qualifiedName}, but only at runtime as a persisted one was not needed before.
+The main idea of metadata persistence is creating a file with data from every reaction used, where each line represents data for a single reaction.
+Filling two distinct maps, hashes and triggers, with the ID as the key.
+A hash value for a reaction is calculated over the normalized abstract syntax tree covering all called routines.
+Normalizing a syntax tree means sorting the features by name and skipping documentation and formatting.
+That calculation happens at compile time in the DSL repo \cite{vitruv-dsls-fork}, similar to already generated values, getting attached to the resulting ChangePropagationSpecification class.
+What a trigger describes is laid out in \autoref{sec:Concept:Migration:SelectiveMigration:Triggers}, and its five parts are persisted as \texttt{changeType;affectedType;affectedFeature;valueType;valueSlot}.
+Both types are metaclasses written as \texttt{nsURI\#ClassName}, while the slot states which side of the change the value occupies.
+The trigger is generated in the same way as the hash, so both of them are encoded in the compiled reactions and can be used further in the process.
+For every reaction, all three will be concatenated in the following format: \texttt{ID|HASH|TRIGGER} and saved to disk, resulting in one file containing all necessary information.
+This can be read back in a migration run to use the information further for the rule selection process.
+
+\subsubsection{Migration run}
+\label{sec:Implementation:Migration:SelectiveMigration:MigrationRun}
+
+The selective migration uses that information, to determine the set of changed elements.
+ID and hash mode behave quite similar, as both of them are used to evaluate dirty rules.
+Between different reaction sets, new ones can be added, old ones can be deleted, or they could be changed (only visible in hash mode), resulting in dirty rules.
+A dirty rule alone does not say which elements are connected to it.
+That gap is closed by the trigger described in \autoref{sec:Concept:Migration:SelectiveMigration:Triggers}.
+The trigger is taken from the new specifications for added and changed rules and from the persisted registry for removed ones, as those no longer exist in the current reaction set.
+Before anything is selected, elements without a correspondence or with one pointing outside the migrated models are excluded.
+The remaining source models are opened in a change recording view, where every element is turned into the changes that could have created it.
+Afterward, they get matched against the triggers of the dirty rules.
+Finding no matches at all ends the run without committing anything, leaving the persisted metadata untouched.
+
+Repropagation itself happens as two commits within the same view.
+Containment positions, references coming from the outside and a copy of all affected elements are captured first, because all of that is lost while removing them.
+The first commit removes the affected elements, letting the new reactions tear down the derived counterparts as well as their correspondences.
+The second one inserts the copies at their old positions.
+It will be observed as a normal insertion, thus it derives new counterparts.
+As both commits are regular change propagations, the metadata is rewritten, leaving the V-SUM with the reaction set it was migrated to.
+
+Removing elements in the first commit revealed a problem in the change recording of Vitruvius.
+Deleting an element also deletes everything it contains.
+But only the deletions were recorded and not that those elements were removed from their container before.
+An incomplete record of that change appeared, making the first commit fail as soon as an affected element contained anything.
+In the full migration this problem never occurred, as it builds the models from scratch instead of removing elements.
+It is a known problem of Vitruv-Change, reported in 2023 and still open \cite{vitruv-change-issue}.
+A fix was proposed in a fork in 2024 that never reached the original repository.
+The same idea is applied in the extended Vitruv-Change \cite{vitruv-change-fork}, recording the missing removal right before each of those deletions.
+
+\subsection{Preservation}
+\label{sec:Implementation:Migration:Preservation}
+
+As both ways of migrating only focus on elements related to correspondences, underived content will not automatically get included.
+Therefore, an additional phase after the migration is added to keep this extra content.
+If an element has a correspondence, some rule produced it.
+If that is not the case, no rule produced it, which makes it underived content.
+Comparing the old and new state with each other requires both states to be loaded at the same time.
+With those, pairs between them have to be built.
+For each old derived element, the correspondence has to be followed to its source.
+This will be matched with the source element in the new state.
+Following this correspondence again leads to the new derived element.
+Afterward, both states iterate together, comparing the children and values of every pair.
+Handwritten content missing in the new state becomes a possible preservation, while content only the old rules produced is dropped by default.
+Each candidate needs to be hold in a feature in the new element, otherwise it is lost with a reason attached in the report, or stated as an open decision if multiple features fit.
+The copy of candidates is inserted, and every insertion that makes the model invalid is undone.
+In the \texttt{report} this only happens on a copy of the migrated state, describing what would be kept.
+Otherwise, it is committed to the migrated V-SUM, so the new reactions propagate the restored content like any other change.
+The four ways of \autoref{sec:Concept:Migration:Preservation} are selected with \texttt{--preserve off | report | user | all}, where \texttt{user} is the default.
+\texttt{off} skips the pass, \texttt{user} re-attaches what no rule of the new set produces, and \texttt{all} additionally restores what the new rules no longer derive.
+A second flag, \texttt{--ask auto | never}, decides whether an open decision is put to the user or only recorded in the report.
+
+\section{Testing}
+\label{sec:Implementation:Testing}
+
+All new code is covered by unit tests, adding 339 test methods to Vitruv-DSLs and Vitruv-Change.
+The preprocessor is checked by 30 unit tests with a mocked file system, so the transformations are tested in isolation.
+The language tests of Vitruv-DSLs \cite{vitruv-dsls-fork} cover the connection between annotations and the compiler.
+An annotated reaction file is rejected by the validation, while the preprocessed file compiles without any error.
+Further tests ensure, that the hash only changes, when the behavior of a reaction or one of it's called routines changes, ignoring comments or formatting.
+The generated triggers are also compared against the matcher used at runtime, so both of them select exactly the same.
+Vitruv-Change \cite{vitruv-change-fork} received 44 new tests for persisting metadata and matching triggers, including the cascade deletion described in \autoref{sec:Implementation:Migration:SelectiveMigration:MigrationRun}.
+
+The migration itself is covered by 246 tests.
+Most of them do not need the reactions compiler at all, as handwritten mock specifications expose metadata directly.
+Custom V-SUMs with two, three or four metamodels are migrated, as well as real examples from BrakeCaseStudy and the combined PCM and UML specifications of the case studies.
+The library example is tested against real reactions, with a fully persisted V-SUM committed as a fixture and one compiled jar per configuration.
+Tests of the matrix run never reuse a JVM between test classes, which keeps the generated artifacts deterministic.
+The case study tests are adapted to a configuration through the feature gates shown in \autoref{listing:required-features-test-gate}.
+Four classes implement the gates: the two annotations, the extension that inverts the outcome of a test and the holder of the active configuration.
+Vitruv-CaseStudies \cite{vitruv-casestudies-fork} carries 96 of these gates over 23 test files.
+The same files gain 31 test methods for behavior that only the new features produce, among them the new classes \texttt{UmlToJavaInterfaceAttributeTest} and \texttt{JavaToUmlInterfaceAttributeTest} for scenarios the original reactions could not produce at all.
+These steps are automated by four scripts in Vitruv-DSLs \cite{vitruv-dsls-fork}.
+Preprocessing annotated reactions into every configuration is done by one script and compiling a jar for each of them another one.
+The third migrates the library example in the matrix run, writing the migrated models and reports, that most of \autoref{ch:Evaluation} is based on.
+The fourth runs a full migration for every pair once per source selection strategy, together with BrakeCaseStudy, to compare the strategies against each other.
+
+\section{Matrix run}
+\label{sec:Implementation:MatrixRun}
+
+The questions of G2 to G4 need a migrated V-SUM for every pair of the nine configurations of the library example.
+These are created by the matrix run.
+The third of the four scripts mentioned above, \texttt{generate-config-matrix} in Vitruv-DSLs \cite{vitruv-dsls-fork}, executes it.
+Every step of it runs in a JVM of its own, as the classpath registry of JaMoPP is global \cite{heidenreich2009closing} and changed by every V-SUM lifecycle, so steps sharing a process would not derive the same.
+For all configurations an empty V-SUM gets created, and the library example gets inserted into it using the jar of that configuration.
+The \texttt{totalWeight} method gets added to the class \texttt{Member} in the resulting Java file except for config7, as \texttt{Member} is realized as an interface there.
+Those V-SUMs serve two purposes.
+On one hand, a migration from that configuration start from a copy of it.
+On the other hand, a migration to that configuration is compared against it as the derivation from scratch.
+
+Each of the 81 cells is a migration from configuration $i$ with the jar of configuration $j$.
+All cells share the same settings, \texttt{--strategy explicit} with \texttt{--dominant uml}, \texttt{--mode ids}, \texttt{--source-update none}, \texttt{--preserve report} and \texttt{--ask never}.
+Further possible arguments are located within the DSL repo \cite{vitruv-dsls-fork}.
+Therefore, every cell is a selective migration as described in \autoref{sec:Implementation:Migration:SelectiveMigration}.
+Afterward, the migrated UML and Java models are compared classifier by classifier with the derivation from scratch of configuration $j$.
+A classifier that only lists its members in a different order is kept apart from a deviation.
+The migrated Java code is also compiled, to be able to have the information if the result is valid.
+Each configuration pair connects the migrated models, the preservation report, a \texttt{RUN.md} describing the outcome and a \texttt{cell.properties} with its numbers in \texttt{thesis/examples/library/runs} of the thesis repository \cite{thesis-repo}.
+All preprocessed rule sets lie next to the \texttt{runs} folder.
+
+The kind of migration a question evaluates is determined by the run that produces its data.
+\textbf{Q2.1} to \textbf{Q2.3}, \textbf{Q3.2}, \textbf{Q3.3} and \textbf{Q4.1} read the cells of the matrix run and therefore evaluate the selective migration.
+\textbf{Q2.4} migrates every V-SUM derived from scratch to another configuration and back with the same settings, so both legs are selective as well.
+\textbf{Q3.1} only compares the V-SUMs derived from scratch with each other.
+Only \textbf{Q2.5} uses the full migration of \autoref{sec:Implementation:Migration:FullMigration}, as the source selection only takes effect there.
+The data for it comes from a second matrix, the selection matrix, created by the fourth script \texttt{generate-selection-matrix}.
+For each of the 81 configuration pairs, it migrates the V-SUM derived from scratch with configuration $i$ to configuration $j$ with \texttt{--mode full}, once per source selection strategy.
+BrakeCaseStudy has no configurations to migrate between.
+Its rules derive a V-SUM from a brake system model with one brake disk, and a full migration with the same rules then re-derives this V-SUM, so that only the choice of the dominant model varies.
+This migration runs once with each of the four metamodels as the explicit choice and once each with the reachability and the fewest changes strategies.
+\textbf{Q4.2} puts the runtime of the selective migration cells against the full migrations of the explicit strategy.
+The numerical values of \autoref{ch:Evaluation} are computed from these artifacts by the scripts in the \texttt{utils} folder of the thesis repository \cite{thesis-repo}, listed in \autoref{table:evaluation-scripts}.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Script}                            & \textbf{Metric} & \textbf{Input}                            \\
+        \hline
+        \texttt{count-loc.sh}                      & M1.1            & 150\% model and derived rule sets         \\
+        \hline
+        \texttt{count-adaptation-effort.py}        & M1.1, M1.2      & \makecell[l]{150\% model, configurations, \\ feature model, test gates, \\ commit history} \\
+        \hline
+        \texttt{classify-reaction-changes.sh}      & M1.3            & original and annotated rules              \\
+        \hline
+        \texttt{measure-preprocessing-overhead.py} & M1.5            & 150\% model and case study tests          \\
+        \hline
+        \texttt{compare-migrated-models.py}        & M2.1, M3.3      & \makecell[l]{matrix cells,                \\ from scratch V-SUMs} \\
+        \hline
+        \texttt{summarize-migration-reports.py}    & M2.2, M2.3      & \makecell[l]{matrix cells,                \\ from scratch V-SUMs} \\
+        \hline
+        \texttt{check-reversibility.sh}            & M2.4            & \makecell[l]{from scratch V-SUMs,         \\ configuration jars} \\
+        \hline
+        \texttt{measure-selection-strategies.py}   & M2.5            & selection matrix                          \\
+        \hline
+        \texttt{classify-inconsistencies.py}       & M3.1            & \makecell[l]{from scratch V-SUMs,         \\ feature selections} \\
+        \hline
+        \texttt{compare-selection.py}              & M3.2            & \makecell[l]{matrix cells, from scratch   \\ V-SUMs, feature selections} \\
+        \hline
+        \texttt{measure-migration-scope.py}        & M4.1            & \makecell[l]{matrix cells,                \\ from scratch V-SUMs} \\
+        \hline
+        \texttt{measure-migration-runtime.py}      & M4.2            & \makecell[l]{matrix cells, selection      \\ matrix, from scratch V-SUMs} \\
+        \hline
+        \texttt{annotate-pcmumlclass-reactions.py} & M5.1            & pcmumlclass rules                         \\
+        \hline
+        \texttt{compare-preprocessed-rules.py}     & M5.1            & annotated and derived rules               \\
+        \hline
+        \texttt{count-specific-code-paths.py}      & M5.2            & preprocessor and migration code           \\
+        \hline
+    \end{tabular}
+    \caption{Scripts in the \texttt{utils} folder of the thesis repository \cite{thesis-repo}, the metrics each belongs to and the artifacts it reads}
+    \label{table:evaluation-scripts}
+\end{table}

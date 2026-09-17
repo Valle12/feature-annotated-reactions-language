@@ -1,0 +1,25 @@
+package catalog;
+
+
+public enum Book {;
+	private catalog.Isbn isbn;
+	public catalog.Isbn getIsbn() {
+		return this.isbn;
+	}
+	public void setIsbn(catalog.Isbn isbn) {
+		this.isbn = isbn;
+	}
+	public int pageCount;
+	public int getPageCount() {
+		return this.pageCount;
+	}
+	public void setPageCount(int pageCount) {
+		this.pageCount = pageCount;
+	}
+	public final void describe() {
+	}
+	public Book() {
+	}}
+
+
+

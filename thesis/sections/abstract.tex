@@ -1,0 +1,10 @@
+\Abstract
+\label{ch:Abstract}
+
+In Vitruvius, consistency preservation rules fix one mapping between metamodels.
+Alternative mappings require copies of the rules.
+This thesis adds feature annotations to the Reactions Language, so that a preprocessor derives the rules of each configuration from one 150\% model.
+When the rules of a persisted V-SUM change, a full migration re-derives all other models from a dominant model, whereas a selective migration repropagates only the affected elements.
+For the umljava reactions, the 150\% model has 3266 lines of code, whereas nine separate copies have 23791.
+Of 72 selective migrations between different configurations, 29 are equivalent to a derivation from scratch.
+A selective migration affects a median of 8.1\% of the rules but 66\% of the UML model.

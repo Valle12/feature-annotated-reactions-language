@@ -1,0 +1,458 @@
+@article{KLARE2021110815,
+  title    = {Enabling consistency in view-based system development — The Vitruvius approach},
+  journal  = {Journal of Systems and Software},
+  volume   = {171},
+  pages    = {110815},
+  year     = {2021},
+  issn     = {0164-1212},
+  doi      = {https://doi.org/10.1016/j.jss.2020.110815},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0164121220302144},
+  author   = {Heiko Klare and Max E. Kramer and Michael Langhammer and Dominik Werle and Erik Burger and Ralf Reussner},
+  keywords = {Consistency, Model-driven software development, Model transformations, Model views},
+  abstract = {During the development of large software-intensive systems, developers use several modeling languages and tools to describe a system from different viewpoints. Model-driven and view-based technologies have made it easier to define domain-specific languages and transformations. Nevertheless, using several languages leads to fragmentation of information, to redundancies in the system description, and eventually to inconsistencies. Inconsistencies have negative impacts on the system’s quality and are costly to fix. Often, there is no support for consistency management across multiple languages. Using a single language is no practicable solution either, as it is overly complex to define, use, and evolve such a language. View-based development is a suitable approach to deal with complex systems, and is widely used in other engineering disciplines. Still, we need to cope with the problems of fragmentation and consistency. In this paper, we present the Vitruvius approach for consistency in view-based modeling. We describe the approach by formalizing the notion of consistency, presenting languages for consistency preservation, and defining a model-driven development process. Furthermore, we show how existing models can be integrated. We have evaluated our approach at two case studies from component-based and embedded automotive software development, using our prototypical implementation based on the Eclipse Modeling Framework.}
+}
+
+@online{emf,
+  accessed = {2025-01-18},
+  author   = {{EMF}},
+  title    = {eclipse-emf/org.eclipse.emf},
+  url      = {https://github.com/eclipse-emf/org.eclipse.emf}
+}
+
+@online{vitruviusGithub,
+  accessed = {2025-01-18},
+  author   = {{Vitruvius}},
+  title    = {Vitruvius Tools},
+  url      = {https://github.com/vitruv-tools/}
+}
+
+@online{vitruv-dsls-fork,
+  accessed = {2026-09-06},
+  author   = {{Valle12}},
+  title    = {Languages for Specifying Consistency Preservation Rules},
+  url      = {https://github.com/Valle12/Vitruv-DSLs/tree/migration-rework}
+}
+
+@online{vitruv-casestudies-fork,
+  accessed = {2026-09-06},
+  author   = {{Valle12}},
+  title    = {Case Studies for the Vitruvius Framework},
+  url      = {https://github.com/Valle12/Vitruv-CaseStudies/tree/feature-annotations}
+}
+
+@online{vitruv-change-fork,
+  accessed = {2026-09-06},
+  author   = {{Valle12}},
+  title    = {Core Artifacts for Change Representation and Propagation},
+  url      = {https://github.com/Valle12/Vitruv-Change/tree/id-persistence}
+}
+
+@online{brakecasestudy-fork,
+  accessed = {2026-09-06},
+  author   = {{Valle12}},
+  title    = {BrakeCaseStudy},
+  url      = {https://github.com/Valle12/BrakeCaseStudy/tree/new-version}
+}
+
+@online{vitruv-dsls-spec-package,
+  accessed = {2026-09-17},
+  author   = {{Valle12}},
+  title    = {Vitruv-DSLs migration, package spec},
+  url      = {https://github.com/Valle12/Vitruv-DSLs/tree/migration-rework/reactions/migration/src/main/java/tools/vitruv/dsls/reactions/migration/spec}
+}
+
+@online{vitruv-dsls-ide-package,
+  accessed = {2026-09-17},
+  author   = {{Valle12}},
+  title    = {Vitruv-DSLs language server, package ide},
+  url      = {https://github.com/Valle12/Vitruv-DSLs/tree/migration-rework/reactions/ide/src/main/xtend/tools/vitruv/dsls/reactions/ide}
+}
+
+@online{vitruv-dsls-vscode-plugin,
+  accessed = {2026-09-17},
+  author   = {{Valle12}},
+  title    = {Vitruv-DSLs Visual Studio Code extension},
+  url      = {https://github.com/Valle12/Vitruv-DSLs/tree/migration-rework/reactions/vscode-plugin}
+}
+
+@online{vitruv-change-issue,
+  accessed = {2026-09-10},
+  author   = {JanWittler},
+  title    = {Change recorder generates incomplete change list on cascade deletion},
+  url      = {https://github.com/vitruv-tools/Vitruv-Change/issues/71}
+}
+
+@online{reactionsDocumentation,
+  accessed = {2025-01-29},
+  author   = {{Vitruvius}},
+  title    = {Reactions Language Documentation},
+  url      = {https://github.com/vitruv-tools/.github/wiki/The-Reactions-Language}
+}
+
+@online{umljavacasestudy,
+  accessed = {2025-01-29},
+  author   = {{Vitruvius}},
+  title    = {Vitruvius UML-Java Case Study},
+  url      = {https://github.com/vitruv-tools/Vitruv-CaseStudies/tree/main/umljava}
+}
+
+@online{umlpcmcasestudy,
+  accessed = {2025-02-12},
+  author   = {{Vitruvius}},
+  title    = {Vitruvius UML-PCM Case Study},
+  url      = {https://github.com/vitruv-tools/Vitruv-CaseStudies/tree/main/pcmumlclass}
+}
+
+@online{xtext,
+  accessed = {2025-01-29},
+  author   = {{Eclipse Foundation}},
+  title    = {Eclipse Xtext},
+  url      = {https://github.com/eclipse-xtext/xtext}
+}
+
+@online{xtend,
+  accessed = {2025-01-29},
+  author   = {{Eclipse Foundation}},
+  title    = {Eclipse Xtend},
+  url      = {https://eclipse.dev/Xtext/xtend/documentation/index.html}
+}
+
+@online{uvl,
+  accessed = {2026-09-12},
+  author   = {{MODEVAR}},
+  title    = {Universal Variability Language (UVL)},
+  url      = {https://universal-variability-language.github.io/}
+}
+
+@inproceedings{flamapy-ide,
+  title     = {UVL web-based editing and analysis with flamapy. ide},
+  author    = {Benitez, Francisco Sebastian and Galindo, Jos{\'e} A and Romero Organv{\'\i}dez, David and Benavides, David},
+  booktitle = {Proceedings of the 19th International Working Conference on Variability Modelling of Software-Intensive Systems},
+  pages     = {121--125},
+  year      = {2025}
+}
+
+@book{clements2002software,
+  title     = {Software product lines},
+  author    = {Clements, Paul and Northrop, Linda},
+  volume    = {1},
+  year      = {2002},
+  publisher = {Addison-Wesley Boston}
+}
+
+@article{struber2018variability,
+  title     = {Variability-based model transformation: formal foundation and application},
+  author    = {Str{\"u}ber, Daniel and Rubin, Julia and Arendt, Thorsten and Chechik, Marsha and Taentzer, Gabriele and Pl{\"o}ger, Jennifer},
+  journal   = {Formal Aspects of Computing},
+  volume    = {30},
+  number    = {1},
+  pages     = {133--162},
+  year      = {2018},
+  publisher = {Springer}
+}
+
+@inproceedings{barkowsky2023incremental,
+  title        = {Incremental model transformations with triple graph grammars for multi-version models},
+  author       = {Barkowsky, Matthias and Giese, Holger},
+  booktitle    = {2023 ACM/IEEE 26th International Conference on Model Driven Engineering Languages and Systems (MODELS)},
+  pages        = {296--306},
+  year         = {2023},
+  organization = {IEEE}
+}
+
+@inproceedings{konig2025transforming,
+  title        = {Transforming Relational Model Queries to Triple Graph Grammars},
+  author       = {K{\"o}nig, Lars and Ritz, Daniel and Burger, Erik},
+  booktitle    = {2025 ACM/IEEE 28th International Conference on Model Driven Engineering Languages and Systems Companion (MODELS-C)},
+  pages        = {752--761},
+  year         = {2025},
+  organization = {IEEE}
+}
+
+@incollection{apel2013software,
+  title     = {Software product lines},
+  author    = {Apel, Sven and Batory, Don and K{\"a}stner, Christian and Saake, Gunter},
+  booktitle = {Feature-Oriented Software Product Lines: Concepts and Implementation},
+  pages     = {3--15},
+  year      = {2013},
+  publisher = {Springer}
+}
+
+@inproceedings{amrani2024survey,
+  title     = {A survey of federative approaches for model management in MBSE},
+  author    = {Amrani, Moussa and Mittal, Rakshit and Goul{\~a}o, Miguel and Amaral, Vasco and Gu{\'e}rin, Sylvain and Mart{\'\i}nez, Salvador and Blouin, Dominique and Bhobe, Anish and Hallak, Yara},
+  booktitle = {Proceedings of the ACM/IEEE 27th International Conference on Model Driven Engineering Languages and Systems},
+  pages     = {990--999},
+  year      = {2024}
+}
+
+@inproceedings{neumann2025towards,
+  title     = {Towards Consistency Preservation for Multi-Domain Variability Modeling},
+  author    = {Neumann, Dirk and Pett, Tobias and Schaefer, Ina},
+  booktitle = {Proceedings of the 2025 29th ACM International Systems and Software Product Line Conference-Volume A},
+  pages     = {88--93},
+  year      = {2025}
+}
+
+@inproceedings{hermann2024towards,
+  title     = {Towards Integrating Low-Code in View-based Development},
+  author    = {Hermann, Anne-Kathrin and K{\"o}nig, Lars and Burger, Erik and Reussner, Ralf},
+  booktitle = {Proceedings of the ACM/IEEE 27th International Conference on Model Driven Engineering Languages and Systems},
+  pages     = {866--875},
+  year      = {2024}
+}
+
+@inproceedings{bezivin2005bridging,
+  title     = {Bridging the ms/dsl tools and the eclipse modeling framework},
+  author    = {B{\'e}zivin, Jean and Hillairet, Guillaume and Jouault, Fr{\'e}d{\'e}ric and Kurtev, Ivan and Piers, William},
+  booktitle = {Proceedings of the International Workshop on Software Factories at OOPSLA},
+  volume    = {5},
+  pages     = {1--19},
+  year      = {2005}
+}
+
+@techreport{bachmann2005variability,
+  title  = {Variability in software product lines},
+  author = {Bachmann, Felix and Clements, Paul C},
+  year   = {2005}
+}
+
+@inproceedings{van2001notion,
+  title        = {On the notion of variability in software product lines},
+  author       = {Van Gurp, Jilles and Bosch, Jan and Svahnberg, Mikael},
+  booktitle    = {Proceedings Working IEEE/IFIP Conference on Software Architecture},
+  pages        = {45--54},
+  year         = {2001},
+  organization = {IEEE}
+}
+
+@inproceedings{kastner2009featureide,
+  title        = {FeatureIDE: A tool framework for feature-oriented software development},
+  author       = {Kastner, Christian and Thum, Thomas and Saake, Gunter and Feigenspan, Janet and Leich, Thomas and Wielgorz, Fabian and Apel, Sven},
+  booktitle    = {2009 ieee 31st international conference on software engineering},
+  pages        = {611--614},
+  year         = {2009},
+  organization = {IEEE}
+}
+
+@article{wittler2023evaluating,
+  title   = {Evaluating Model Differencing for the Consistency Preservation of State-based Views.},
+  author  = {Wittler, Jan Willem and Saglam, Timur and K{\"u}hn, Thomas},
+  journal = {J. Object Technol.},
+  volume  = {22},
+  number  = {2},
+  pages   = {1--14},
+  year    = {2023}
+}
+
+@inproceedings{ananieva2022preserving,
+  title     = {Preserving consistency of interrelated models during view-based evolution of variable systems},
+  author    = {Ananieva, Sofia and K{\"u}hn, Thomas and Reussner, Ralf},
+  booktitle = {Proceedings of the 21st ACM SIGPLAN International Conference on Generative Programming: Concepts and Experiences},
+  pages     = {148--163},
+  year      = {2022}
+}
+
+@article{white2010automated,
+  title     = {Automated diagnosis of feature model configurations},
+  author    = {White, Jules and Benavides, David and Schmidt, Douglas C and Trinidad, Pablo and Dougherty, Brian and Ruiz-Cort{\'e}s, Antonio},
+  journal   = {Journal of Systems and Software},
+  volume    = {83},
+  number    = {7},
+  pages     = {1094--1107},
+  year      = {2010},
+  publisher = {Elsevier}
+}
+
+@inproceedings{nevsic2019principles,
+  title     = {Principles of feature modeling},
+  author    = {Ne{\v{s}}i{\'c}, Damir and Kr{\"u}ger, Jacob and St{\u{a}}nciulescu, Ștefan and Berger, Thorsten},
+  booktitle = {Proceedings of the 2019 27th ACM joint meeting on european software engineering conference and symposium on the foundations of software engineering},
+  pages     = {62--73},
+  year      = {2019}
+}
+
+@article{sulir2016recording,
+  title     = {Recording concerns in source code using annotations},
+  author    = {Sul{\'\i}r, Mat{\'u}{\v{s}} and Nos{\'a}l', Milan and Porub{\"a}n, Jaroslav},
+  journal   = {Computer Languages, Systems \& Structures},
+  volume    = {46},
+  pages     = {44--65},
+  year      = {2016},
+  publisher = {Elsevier}
+}
+
+@inproceedings{heidenreich2009closing,
+  title        = {Closing the gap between modelling and java},
+  author       = {Heidenreich, Florian and Johannes, Jendrik and Seifert, Mirko and Wende, Christian},
+  booktitle    = {International Conference on Software Language Engineering},
+  pages        = {374--383},
+  year         = {2009},
+  organization = {Springer}
+}
+
+@online{thesis-repo,
+  accessed = {2026-09-10},
+  author   = {{Valle12}},
+  title    = {Feature Annotated Reactions Language},
+  url      = {https://github.com/Valle12/feature-annotated-reactions-language}
+}
+
+@inproceedings{hearnden2006incremental,
+  title        = {Incremental model transformation for the evolution of model-driven systems},
+  author       = {Hearnden, David and Lawley, Michael and Raymond, Kerry},
+  booktitle    = {International Conference on Model Driven Engineering Languages and Systems},
+  pages        = {321--335},
+  year         = {2006},
+  organization = {Springer}
+}
+
+@inproceedings{greifenberg2015integration,
+  title        = {Integration of handwritten and generated object-oriented code},
+  author       = {Greifenberg, Timo and H{\"o}lldobler, Katrin and Kolassa, Carsten and Look, Markus and Mir Seyed Nazari, Pedram and M{\"u}ller, Klaus and Navarro Perez, Antonio and Plotnikov, Dimitri and Rei{\ss}, Dirk and Roth, Alexander and others},
+  booktitle    = {International Conference on Model-Driven Engineering and Software Development},
+  pages        = {112--132},
+  year         = {2015},
+  organization = {Springer}
+}
+
+@inproceedings{leonhardt2015integration,
+  title     = {Integration of Existing Software Artifacts into a View- and Change-Driven Development Approach},
+  author    = {Leonhardt, Sven and Hettwer, Benjamin and Hoor, Johannes and Langhammer, Michael},
+  booktitle = {Proceedings of the 2015 Joint MORSE/VAO Workshop on Model-Driven Robot Software Engineering and View-based Software-Engineering},
+  pages     = {17--24},
+  year      = {2015},
+  publisher = {ACM},
+  doi       = {10.1145/2802059.2802061}
+}
+
+@inproceedings{sijtema2010introducing,
+  title     = {Introducing Variability Rules in ATL for Managing Variability in MDE-based Product Lines},
+  author    = {Sijtema, Marten},
+  booktitle = {Proceedings of the 2nd International Workshop on Model Transformation with ATL (MtATL 2010)},
+  series    = {CEUR Workshop Proceedings},
+  volume    = {711},
+  pages     = {39--49},
+  year      = {2010},
+  publisher = {CEUR-WS.org},
+  url       = {https://ceur-ws.org/Vol-711/}
+}
+
+@techreport{kang1990feature,
+  title       = {Feature-oriented domain analysis (FODA) feasibility study},
+  author      = {Kang, Kyo C and Cohen, Sholom G and Hess, James A and Novak, William E and Peterson, A Spencer},
+  institution = {Carnegie Mellon University, Software Engineering Institute},
+  number      = {CMU/SEI-90-TR-21},
+  year        = {1990},
+  month       = {11}
+}
+
+@inproceedings{czarnecki2005mapping,
+  title        = {Mapping features to models: A template approach based on superimposed variants},
+  author       = {Czarnecki, Krzysztof and Antkiewicz, Micha{\l}},
+  booktitle    = {International conference on generative programming and component engineering},
+  pages        = {422--437},
+  year         = {2005},
+  organization = {Springer}
+}
+
+@book{pohl2005software,
+  title     = {Software product line engineering: foundations, principles, and techniques},
+  author    = {Pohl, Klaus and B{\"o}ckle, G{\"u}nter and Van Der Linden, Frank},
+  volume    = {1},
+  year      = {2005},
+  publisher = {Springer}
+}
+
+@article{kuhne2006matters,
+  title     = {Matters of (meta-) modeling},
+  author    = {K{\"u}hne, Thomas},
+  journal   = {Software \& Systems Modeling},
+  volume    = {5},
+  number    = {4},
+  pages     = {369--385},
+  year      = {2006},
+  publisher = {Springer}
+}
+
+@inproceedings{kaestner2008granularity,
+  author    = {K{\"a}stner, Christian and Apel, Sven and Kuhlemann, Martin},
+  title     = {Granularity in software product lines},
+  year      = {2008},
+  isbn      = {9781605580791},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/1368088.1368131},
+  doi       = {10.1145/1368088.1368131},
+  abstract  = {Building software product lines (SPLs) with features is a challenging task. Many SPL implementations support features with coarse granularity - e.g., the ability to add and wrap entire methods. However, fine-grained extensions, like adding a statement in the middle of a method, either require intricate workarounds or obfuscate the base code with annotations. Though many SPLs can and have been implemented with the coarse granularity of existing approaches, fine-grained extensions are essential when extracting features from legacy applications. Furthermore, also some existing SPLs could benefit from fine-grained extensions to reduce code replication or improve readability. In this paper, we analyze the effects of feature granularity in SPLs and present a tool, called Colored IDE (CIDE), that allows features to implement coarse-grained and fine-grained extensions in a concise way. In two case studies, we show how CIDE simplifies SPL development compared to traditional approaches.},
+  booktitle = {Proceedings of the 30th International Conference on Software Engineering},
+  pages     = {311–320},
+  numpages  = {10},
+  keywords  = {feature refactoring, ide, software product lines, virtual separation of concerns},
+  location  = {Leipzig, Germany},
+  series    = {ICSE '08}
+}
+
+@techreport{omgMof,
+  author      = {{Object Management Group}},
+  title       = {OMG Meta Object Facility (MOF) Core Specification, Version 2.5.1},
+  institution = {Object Management Group},
+  number      = {formal/2019-10-01},
+  year        = {2019},
+  month       = {10},
+  url         = {https://www.omg.org/spec/MOF/2.5.1}
+}
+
+@techreport{omgXmi,
+  author      = {{Object Management Group}},
+  title       = {XML Metadata Interchange (XMI) Specification, Version 2.5.1},
+  institution = {Object Management Group},
+  number      = {formal/2015-06-07},
+  year        = {2015},
+  month       = {6},
+  url         = {https://www.omg.org/spec/XMI/2.5.1}
+}
+
+@online{emfDocs,
+  accessed = {2026-09-14},
+  author   = {{Eclipse Foundation}},
+  title    = {The Eclipse Modeling Framework (EMF) Overview},
+  url      = {https://help.eclipse.org/latest/topic/org.eclipse.emf.doc/references/overview/EMF.html}
+}
+
+@techreport{basili1992gqm,
+  title       = {Software Modeling and Measurement: The Goal/Question/Metric Paradigm},
+  author      = {Basili, Victor R.},
+  institution = {University of Maryland, College Park},
+  number      = {CS-TR-2956, UMIACS-TR-92-96},
+  year        = {1992},
+  month       = {9}
+}
+
+@online{javaBeansTutorial,
+  accessed = {2026-09-16},
+  author   = {{Oracle}},
+  title    = {Properties (The Java Tutorials, JavaBeans, Writing JavaBeans Components)},
+  url      = {https://docs.oracle.com/javase/tutorial/javabeans/writing/properties.html}
+}
+
+@online{jakartaPersistence,
+  accessed = {2026-09-16},
+  author   = {{Eclipse Foundation}},
+  title    = {Jakarta Persistence 3.1 Specification},
+  url      = {https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html}
+}
+
+@inproceedings{harrison2000mapping,
+  title     = {Mapping UML designs to Java},
+  author    = {Harrison, William and Barton, Charles and Raghavachari, Mukund},
+  booktitle = {Proceedings of the 15th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications},
+  pages     = {178--187},
+  year      = {2000}
+}
+
+@misc{yu2010threats,
+  title  = {Threats to validity of research design},
+  author = {Yu, Chong-ho and Ohlund, Barbara},
+  year   = {2010}
+}

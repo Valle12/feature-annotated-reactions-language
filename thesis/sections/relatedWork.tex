@@ -1,0 +1,127 @@
+\chapter{Related Work}
+\label{ch:RelatedWork}
+
+In model-driven systems, consistency specifications are regarded as the stable component.
+It is acknowledged that models may vary across products, the metamodels evolve over time, and existing artifacts are migrated whenever either models or metamodels change.
+It is a commonly held assumption that the rules relating to the models remain applicable valid throughout course of the process.
+In scenarios where variability is permitted within the rules themselves it is resolved prior to the existence of any artifacts.
+Ensuring nothing derived from an earlier variant requires reconsideration.
+
+\section{Variability in model transformations and consistency rules}
+\label{sec:RelatedWork:VariabilityInModelTransformationsAndConsistencyRules}
+
+In the context of model transformations research, variability has been identified as a contributing factor, mainly manifesting within the models themselves.
+The rules are re-targeted or annotated to process a whole product line, yet they remain fixed.
+In instances, where variability is introduced within the rules, it is resolved during the matching process or prior to compilation.
+The subsequent papers do not ask of reconsidering the derived transformation.
+
+Strüber et al. have developed a methodology for the integration of similar rules into a unified \texttt{variability-based rule} \cite{struber2018variability}.
+Such a rule maintains the union of elements of all the rules it replaces, and parts where rules differ are guarded by presence conditions over variation points.
+In the case of the common part, the match is computed only once and specialized per configuration afterward.
+The variability is resolved during matching with one artifact representing all variants \cite{struber2018variability}.
+The preprocessor described in this thesis resolves annotations earlier, resulting in conventional reactions for the V-SUM without any variability.
+
+The closest architectural precedent extends the \textit{Atlas Transformation Language} (ATL) itself \cite{sijtema2010introducing}.
+Sijtema incorporates a \texttt{variability rule} as a construct of the language, which is derived from the standard rule metaclass.
+This approach preserves the declarative nature of the original and the implicit scheduling of a standard ATL rule.
+Execution semantics are applied precisely when the corresponding variant is selected in the feature model.
+It is important to note that this extension does not necessitate a modified engine.
+A further transformation compiles the ATL with the new modification into a plain ATL model.
+The engine is able to execute those functions, thereby eliminating the need for a plugin \cite{sijtema2010introducing}.
+The same reasoning can be applied to annotated reactions.
+These reactions are reduced to ordinary reactions prior to compilation, so neither the compiler of the Reactions Language nor Vitruvius needs any support for features.
+ATL transformations are unidirectional and stateless.
+Consequently, modifications to the variant selection necessitate the implementation of new transformations, which are applied to the source models again \cite{sijtema2010introducing}.
+A V-SUM does not exhibit such behavior, given its persistence across iterations.
+The paper does not address the artifacts that come from a variant change.
+However, it is precisely these artifacts that motivate the migration developed in \autoref{sec:Concept:Migration}.
+
+The expansion of Vitruvius to accommodate variability has been previously explored.
+Ananieva et al. propose a unified conceptual model that incorporates variability in space and time.
+The interrelated models of a variable system are maintained in a state of consistency as the system evolves.
+CPRs form a fixed frame for that construction.
+The fundamental system is the variable element in this context.
+Consequently, the product line comprises models with a single rule set applicable to all models within the line \cite{ananieva2022preserving}.
+In the present work the product line is assembled out of the rules, thereby establishing a complementary relationship between the two.
+
+Neumann et al. integrate the consistency preservation mechanisms of Vitruvius with delta-oriented variability modelling \cite{neumann2025towards}.
+A delta consists of operations that add, remove, or modify model elements. Applying a delta transforms one model variant into another.
+Deltas are developed for a single domain and applied to a core model that remains consistent across all domains.
+Within Vitruvius, applying a delta initiates changes that activate the consistency preservation rules.
+The rules identify corresponding changes in other domains, which are then recorded as deltas specific to those domains.
+This approach aligns with Vitruvius, as a delta represents a change and Vitruvius maintains consistency by propagating such changes.
+Similar to the approach of Ananieva et al., the models exhibit variability, whereas the consistency preservation rules remain unchanged for each variant.
+Future work aims to define consistency preservation rules between deltas rather than between metamodels, ensuring that modifications to variability also remain consistent \cite{neumann2025towards}.
+This thesis addresses variability in the mapping between metamodels, such as determining whether a UML class is mapped to a Java class or a Java interface.
+Such a mapping is defined by the consistency preservation rules, so a delta applied to a model cannot vary it.
+
+\section{Annotative variability}
+\label{sec:RelatedWork:AnnotativeVariability}
+
+Annotative variability marks the elements of an artifact directly with the features they belong to \cite{kaestner2008granularity}.
+Sulír et al. attach a concern adjacent to the element to which it belongs.
+The intent behind a piece of code is embedded within the code itself, rather than being conveyed through a separate document.
+Those concerns merely document, rather than derive, as no variant is selected from them.
+The mechanism outlined in this thesis employs locality, yet the preprocessor functions by reading reactions and determining which elements get kept \cite{sulir2016recording}.
+
+\section{Migration of existing artifacts}
+\label{sec:RelatedWork:MigrationOfExistingArtifacts}
+
+The migration of artifacts whose definition has undergone modifications is a recognized issue, provided that the definition in question is a metamodel.
+In the implementation in this thesis, the metamodels are untouched, and the models maintain their validity.
+The underlying specifications undergo alterations, resulting in the disruption of correspondence.
+
+In Hearnden et al., the transformation is maintained in a running state and the derivation of each component of the target is recorded \cite{hearnden2006incremental}.
+A change can be mapped onto the target incrementally instead of doing everything at once again.
+The authors argue that the same mechanism can be applied to a change of the transformation definition itself, rendering it the closest published work to the problem covered in this thesis.
+The record is the memory context, while a V-SUM is persisted between runs.
+The changed rules have to be recovered afterward from identifiers, hashes and triggers.
+
+Leonhardt et al. commence their investigation by assuming the same observation, relying on changes that have been recorded \cite{leonhardt2015integration}.
+A strategy that is employed involves the synthesis of the change sequence that would have generated the models and propagated it afterward.
+That represents the internal replay used in \autoref{sec:Concept:Migration}.
+Given that the artifacts were built outside Vitruvius, no existing V-SUM, including correspondences is available.
+They have to start from an empty V-SUM with a predefined rule \cite{leonhardt2015integration}.
+In the thesis correspondences already exist and only the underlying rules change.
+
+\section{Preservation of handwritten content}
+\label{sec:RelatedWork:PreservationOfHandwrittenContent}
+
+Greifenberg et al. have conducted a comparative analysis of eight mechanisms that integrate handwritten and generated code, including partial classes and protected regions \cite{greifenberg2015integration}.
+Each of them fixes the place where handwritten code may appear in advance.
+Vitruvius does not fix such place.
+An element no correspondence points at counts as underived.
+Everything the rules did not derive ends up in the preservation report (\autoref{sec:Concept:Migration:Preservation}), whether a person wrote it or not.
+
+\section{Other consistency approaches}
+\label{sec:RelatedWork:OtherConsistencyApproaches}
+
+Alternative approaches to maintaining consistency in models utilize mechanisms that are not connected to the Reactions language.
+Each of these systems operates under the assumption that its own specification is given.
+Multi-version models enable the storage of a model's history within a single graph.
+This property of multi-version models facilitates transformations that can operate on multiple versions concurrently.
+Barkowsky and Giese employ triple graph grammars to define such transformations on multi-version models.
+The simultaneous transformation of all versions reduces memory usage and can reduce execution time for extensive version histories.
+However, it can add overhead in less favorable circumstances \cite{barkowsky2023incremental}.
+It is important to note that reactions utilize the current version of a model exclusively and possess no history.
+Graph stores are designed to host versions of the models rather than the rules that relate to them.
+
+König et al. express the correspondence as a query.
+The relational operators define views over the models and each of them is consolidated into a triple graph rule.
+Those views are analogous to queries in relational databases.
+The transformation and synchronization of these views is then managed by the grammars.
+In this approach, operators are not regarded as entities that undergo change \cite{konig2025transforming}.
+
+\section{Research gap}
+\label{sec:RelatedWork:ResearchGap}
+
+Variability in model transformations exists, but it gets resolved before any artifact is derived from it \cite{struber2018variability,sijtema2010introducing}.
+Inside Vitruvius the variability is carried by the models, while the reactions relating them remain fixed \cite{ananieva2022preserving,neumann2025towards}.
+The migrating of artifacts whose definition has undergone modification is also well-defined, provided that the definition in question is a metamodel.
+Incremental re-execution after a change of the transformation itself was found only once, assuming an engine that keeps running.
+The authors argue for this extension rather than providing a demonstration of it \cite{hearnden2006incremental}.
+Vitruvius has the capability to incorporate existing artifacts into an empty V-SUM, but with reactions that do not change \cite{leonhardt2015integration}.
+Alternative approaches to consistency treat their own specification as a given \cite{barkowsky2023incremental,konig2025transforming}.
+A proposal within Vitruvius aims to establish consistency preservation rules between deltas rather than between metamodels.
+Its variants start from a consistent core model and are derived under rules that do not change \cite{neumann2025towards}.
+No publication was found that altered the consistency specification of a previously recorded V-SUM, which is the gap this thesis addresses.

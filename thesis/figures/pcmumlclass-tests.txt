@@ -1,0 +1,49 @@
+pcmumlclass generalizability test matrix (M5.1)
+Recorded: 2026-09-02 | Env: Windows 11, OpenJDK 21.0.12 (Corretto), vitruv 4.1.0-SNAPSHOT
+total = 53 tests per run; 52 execute, 1 is skipped in both states because the case study
+itself disables MediaStoreRepositoryCreationTest.testMediaStoreRepositoryCreation_UML2PCM
+(@Disabled upstream, stepwise UML insertion is no longer supported by the case study)
+
+baseline     = pcmumlclass rules as checked out (67fc9a843), no annotations
+preprocessed = all 126 reactions annotated with @feature(type = "PcmUmlClass"), run through
+               the preprocessor with the identity configuration pcmumlclass.json =
+               ["PcmUmlClass"], and built with -Dpcmumlclass.reactions.dir pointing at the
+               generated pcmumlclass-reactions folder
+
+test class                       | baseline - pass / fail | preprocessed - pass / fail
+---------------------------------|------------------------|---------------------------
+AssemblyContextConceptTest       | 2 / 0                  | 2 / 0
+AttributeConceptTest             | 6 / 0                  | 6 / 0
+CompositeDataTypeConceptTest     | 4 / 0                  | 4 / 0
+InterfaceConceptTest             | 6 / 0                  | 6 / 0
+MediaStoreRepositoryCreationTest | 1 / 0 (+1 skipped)     | 1 / 0 (+1 skipped)
+ParameterConceptTest             | 6 / 0                  | 6 / 0
+ProvidedRoleTest                 | 2 / 0                  | 2 / 0
+RepositoryComponentConceptTest   | 6 / 0                  | 6 / 0
+RepositoryConceptTest            | 8 / 0                  | 8 / 0
+RequiredRoleConceptTest          | 3 / 0                  | 3 / 0
+SignatureConceptTest             | 6 / 0                  | 6 / 0
+SystemConceptTest                | 2 / 0                  | 2 / 0
+TOTAL                            | 52 / 0 (+1 skipped)    | 52 / 0 (+1 skipped)
+
+Both columns come from one run of ./pcmumlclass-tests <label> [reactions-dir] each in the
+Vitruv-CaseStudies checkout (full clean + dependency install per run, logs under
+pcmumlclass-tests-details/). The test suite is untouched in both states.
+
+The annotated sources alone do not compile on purpose: the reactions compiler guards
+against '@feature' in its input ("Found '@feature' annotation in reactions source. Run the
+reactions preprocessor before compiling, ...") and reported that error for all 30 annotated
+rule files, the same guard the annotated umljava master relies on. Every build of annotated
+rules therefore goes through the preprocessor, and the preprocessed column measures the
+transferred pipeline end to end.
+
+Content check between the annotated rules and the preprocessed output
+(utils/compare-preprocessed-rules.py): 32/32 files, 126/126 reactions, 251/251 routines,
+no candidate dead code. With everything selected only the annotation lines disappear; the
+three routines of the sharedRoutines segment are reached through the unqualified
+'import routines sharedRoutines' the transfer taught the preprocessor to follow.
+
+Preprocessor generalizations the transfer needed, both verified to leave the nine umljava
+configurations byte-identical: rule files at the top level of the reactions folder (the two
+Combined*.reactions aggregator files) and routine calls resolved through imports without
+qualified names, which umljava never uses.

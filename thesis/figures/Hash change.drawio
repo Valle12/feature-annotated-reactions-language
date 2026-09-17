@@ -1,0 +1,76 @@
+<mxfile host="Electron">
+  <diagram name="Seite-1" id="ZqkXjmiDgjszj3X0j_tR">
+    <mxGraphModel dx="1689" dy="996" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="583" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-40" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;size=16;spacingLeft=6;spacingRight=6;" value="routine createOrFindJavaClass(uml::Classifier umlClassifier) {&lt;div&gt;&amp;nbsp;&amp;nbsp;match {&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;require absence of java::ConcreteClassifier&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;corresponding to umlClassifier&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;background-color: rgb(255, 153, 153);&quot;&gt;val javaPackage = ...&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;background-color: rgb(153, 255, 153);&quot;&gt;val targetPackage = ...&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp;}&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp;...&lt;/div&gt;&lt;div&gt;}&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="380" x="60" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-53" edge="1" parent="1" source="gkR1Vtm-8iQgxYSdiVqx-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="gkR1Vtm-8iQgxYSdiVqx-27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-54" connectable="0" parent="gkR1Vtm-8iQgxYSdiVqx-53" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="part of" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-27" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="umlToJavaClassifier::UmlClassInserted&lt;div&gt;+ transitively called routines&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="280" x="110" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-29" edge="1" parent="1" source="gkR1Vtm-8iQgxYSdiVqx-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gkR1Vtm-8iQgxYSdiVqx-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-55" connectable="0" parent="gkR1Vtm-8iQgxYSdiVqx-29" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="code generation" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-28" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="hash (recomputed)&lt;div&gt;differs&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="30" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="1pwmkAVQgggLDXVM-JBI-3" edge="1" parent="1" source="gkR1Vtm-8iQgxYSdiVqx-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="gkR1Vtm-8iQgxYSdiVqx-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-37" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="V-SUM&lt;div&gt;config1&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="52.5" x="423.75" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-34" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="hash (persisted)&lt;div&gt;0e672524…03117&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="200" x="350" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-39" edge="1" parent="1" source="gkR1Vtm-8iQgxYSdiVqx-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="gkR1Vtm-8iQgxYSdiVqx-30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-36" edge="1" parent="1" source="gkR1Vtm-8iQgxYSdiVqx-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="gkR1Vtm-8iQgxYSdiVqx-30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-30" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Migration" vertex="1">
+          <mxGeometry height="60" width="120" x="250" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-47" edge="1" parent="1" source="gkR1Vtm-8iQgxYSdiVqx-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gkR1Vtm-8iQgxYSdiVqx-43">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-43" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Dirty rules" vertex="1">
+          <mxGeometry height="90" width="330" x="145" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-45" parent="gkR1Vtm-8iQgxYSdiVqx-43" style="text;strokeColor=none;fillColor=#FFE6CC;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="~ umlToJavaClassifier::UmlClassInserted" vertex="1">
+          <mxGeometry height="30" width="330" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-46" parent="gkR1Vtm-8iQgxYSdiVqx-43" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="..." vertex="1">
+          <mxGeometry height="30" width="330" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-64" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontStyle=2;" value="continues as for an identifier change" vertex="1">
+          <mxGeometry height="30" width="330" x="145" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-65" edge="1" parent="1" source="gkR1Vtm-8iQgxYSdiVqx-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gkR1Vtm-8iQgxYSdiVqx-64">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gkR1Vtm-8iQgxYSdiVqx-66" connectable="0" parent="gkR1Vtm-8iQgxYSdiVqx-65" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="match triggers" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

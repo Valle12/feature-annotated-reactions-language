@@ -1,0 +1,1223 @@
+\chapter{Evaluation}
+\label{ch:Evaluation}
+
+This chapter answers the questions of the GQM plan in \autoref{sec:Introduction:ResearchGoals}.
+Each section evaluates one goal, and each subsection answers one question.
+A subsection restates its question, names the metric and the data behind it, and closes with the answer.
+Feature annotations are evaluated first.
+Quality, identification and effort of a migration follow, and the transfer to other rules concludes the evaluation.
+\Autoref{sec:Evaluation:EvaluationSetup} describes the subjects and the runs that produce the data.
+\Autoref{sec:Evaluation:ThreatsToValidity} closes the chapter with the threats to the validity of the results.
+
+\section{Evaluation setup}
+\label{sec:Evaluation:EvaluationSetup}
+
+Three subjects enter the evaluation.
+Its main subject is the 150\% model of the umljava rules with the nine configurations of \autoref{table:library-configurations}.
+It consists of 145 reactions and 187 routines in ten reactions files, and it annotates the reactions with 37 features.
+Models for these rules to derive and migrate come from the library example of \autoref{sec:RunningExample:LibraryExample}.
+BrakeCaseStudy \cite{brakecasestudy-fork} contributes a V-SUM of four metamodels for a brake system, CAD, Simulink and AUTOSAR, whose rules connect them in a chain.
+Only the comparison of the strategies for choosing the dominant model uses it.
+As a second rule set, the pcmumlclass rules \cite{umlpcmcasestudy} serve for the transfer of the annotation mechanism.
+
+Most results come from the matrix run of \autoref{sec:Implementation:MatrixRun}.
+A script of the migration tool, \texttt{generate-config-matrix}, executes it.
+For every configuration, its rules derive the library example in an empty V-SUM.
+Afterwards, the Java code of this derivation from scratch receives the handwritten body of \texttt{Member.totalWeight}, except in config7, which realizes \texttt{Member} as an interface.
+A configuration pair consists of a source configuration $i$ and a target configuration $j$.
+For each of the 81 ordered pairs, the matrix run migrates the derivation from scratch of $i$ with the rules of $j$.
+Of these pairs, 72 switch between two different configurations, whereas the other nine keep their configuration.
+Every migration of the matrix run is a selective migration with UML as the dominant model.
+UML dominates because the library example is modeled in UML and its Java code is derived from it.
+All of them use the settings \texttt{--strategy explicit --dominant uml --mode ids --source-update none --preserve report --ask never}.
+For configuration switches, the comparison of identifiers, \texttt{--mode ids}, suffices, as \autoref{sec:Evaluation:InconsistencyIdentification:ComparisonOfIdentifiersAndSemanticHashes} shows.
+Since the source update only applies to full migrations, it is switched off, and \texttt{--ask never} records open decisions instead of asking a person.
+With \texttt{--preserve report}, the preservation step records underived content but restores none of it, as described in \autoref{sec:Concept:Migration:Preservation}.
+Migrated models thus show what the rules derive, independently of what the preservation step would restore.
+All 72 selective migrations completed without falling back to a full migration.
+Each pair stores its migrated models and the preservation report.
+A \texttt{RUN.md} adds the dirty rules and affected elements, and a \texttt{cell.properties} the counts and phase times.
+
+A second matrix, the selection matrix, migrates the same 81 pairs as full migrations with \texttt{--mode full} and otherwise the same settings.
+Its script \texttt{generate-selection-matrix} runs it once per strategy for choosing the dominant model, and the explicit strategy once with UML and once with Java.
+All of these full migrations complete.
+BrakeCaseStudy has no configurations to switch between.
+Its rules derive a V-SUM from a brake system model with one brake disk, and full migrations with the same rules re-derive it, so that only the choice of the dominant model varies.
+Every run records the chosen dominant model, the number of changes and the phase times in a properties file.
+\Autoref{table:evaluation-data} lists the data each question is answered from and the kind of migration that produced it.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Questions}                          & \textbf{Data}                                & \textbf{Migration} \\
+        \hline
+        \textbf{Q1.1}, \textbf{Q1.2}, \textbf{Q1.3} & 150\% model, derived rule sets, rule history & none               \\
+        \hline
+        \textbf{Q1.4}, \textbf{Q1.5}                & case study tests on the derived rule sets    & none               \\
+        \hline
+        \textbf{Q2.1}, \textbf{Q2.2}, \textbf{Q2.3} & matrix run                                   & selective          \\
+        \hline
+        \textbf{Q2.4}                               & migrations to another configuration and back & selective          \\
+        \hline
+        \textbf{Q2.5}                               & selection matrix, BrakeCaseStudy             & full               \\
+        \hline
+        \textbf{Q3.1}                               & derivations from scratch                     & none               \\
+        \hline
+        \textbf{Q3.2}, \textbf{Q4.1}                & matrix run, derivations from scratch         & selective          \\
+        \hline
+        \textbf{Q3.3}                               & registries of the derivations, unit tests    & none               \\
+        \hline
+        \textbf{Q4.2}                               & matrix run, selection matrix                 & selective and full \\
+        \hline
+        \textbf{Q5.1}                               & pcmumlclass rules and tests                  & none               \\
+        \hline
+        \textbf{Q5.2}                               & code of the preprocessor and the migration   & none               \\
+        \hline
+    \end{tabular}
+    \caption{Data each question is answered from and the kind of migration that produced the data}
+    \label{table:evaluation-data}
+\end{table}
+
+All runs took place on one machine with an Intel Core i9-9900K processor and 16 logical processors.
+It runs Windows 11 and the Java Development Kit 21.0.12 of Amazon Corretto.
+Every migration runs in a Java virtual machine of its own that has not been warmed up.
+Inside that virtual machine, the migration measures the time of its phases, excluding the start time.
+Runs of a matrix are executed one after another.
+Numbers in this chapter are computed from the generated artifacts, the recorded test runs and the source code of the tools.
+Scripts in the thesis repository \cite{thesis-repo} compute them, as listed in \autoref{table:evaluation-scripts}.
+Each subsection names the script behind its metric, what it reads or runs and what it extracts.
+
+\section{Annotation mechanism}
+\label{sec:Evaluation:AnnotationMechanism}
+
+G1 analyzes the annotation mechanism in five respects.
+Its first three questions compare the 150\% model with separately maintained rule sets and with the original rules.
+Questions four and five examine the rule sets that the preprocessor derives.
+
+\subsection{Compactness}
+\label{sec:Evaluation:AnnotationMechanism:Compactness}
+
+\textbf{Q1.1} asks how compact a 150\% rule set is compared to maintaining the rule set of every configuration separately.
+\textbf{M1.1} counts the lines of code and files of the 150\% model and of the nine derived rule sets.
+Blank lines and lines that only hold a comment are not counted.
+Counting is done by \texttt{count-loc.sh}, which runs once over the annotated reactions of the case study and once over each derived rule set.
+For an estimate with a shared core, \texttt{count-adaptation-effort.py} splits the derived rule sets into blocks.
+It sums the lines of the blocks that all nine hold identically.
+
+Compared with nine separate rule sets, the 150\% model is considerably smaller.
+It holds 3266 lines of code, whereas the nine derived rule sets sum up to 23791 lines, as \autoref{table:rule-set-size} shows.
+Nine separate copies would thus be larger by a factor of 7.28.
+Even the two smallest configurations, config7 and config8, together exceed the 150\% model.
+Every derived rule set consists of ten rule files like the 150\% model, since the preprocessor writes one file for every input file.
+Nine separate rule sets therefore consist of 90 files.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|r|}
+        \hline
+        \textbf{Rule set}                       & \textbf{LOC} \\
+        \hline
+        \textbf{150\% model}                    & 3266         \\
+        \hline
+        \textbf{config1}                        & 2543         \\
+        \hline
+        \textbf{config2}                        & 2571         \\
+        \hline
+        \textbf{config3}                        & 2720         \\
+        \hline
+        \textbf{config4}                        & 2611         \\
+        \hline
+        \textbf{config5}                        & 2672         \\
+        \hline
+        \textbf{config6}                        & 2608         \\
+        \hline
+        \textbf{config7}                        & 2528         \\
+        \hline
+        \textbf{config8}                        & 2528         \\
+        \hline
+        \textbf{config9}                        & 3010         \\
+        \hline
+        \textbf{Sum of the nine configurations} & 23791        \\
+        \hline
+    \end{tabular}
+    \caption{Lines of code of the 150\% model and of the rule sets derived for the nine configurations, each consisting of ten rule files}
+    \label{table:rule-set-size}
+\end{table}
+
+Nine complete copies overstate the alternative, however.
+A block is the declaration of one reaction or one routine together with its body.
+Separately maintained rule sets could keep their common blocks in a shared reactions segment.
+The Reactions Language composes rule sets from whole segments.
+All nine derived rule sets contain 261 identical blocks with 2301 lines.
+Keeping these blocks only once would reduce the nine rule sets to 5383 lines, which still exceeds the 150\% model by 65\%.
+Blocks that several but not all configurations hold would still exist in several copies.
+Each copy would lie in a segment of its own, whose name is part of the identifier of the rule.
+The comparison of identifiers would then report an unchanged rule as removed and added, as \autoref{sec:Concept:Migration:SelectiveMigration:ReactionIdentifiers} describes for a rename.
+
+With respect to \textbf{Q1.1}, the 150\% model is compact.
+With 3266 lines of code in ten files, it is 7.28 times smaller than nine separate rule sets with 23791 lines in 90 files.
+It is still 39\% smaller than nine rule sets that share their common blocks.
+
+\subsection{Adaptation effort}
+\label{sec:Evaluation:AnnotationMechanism:AdaptationEffort}
+
+\textbf{Q1.2} asks how much adaptation effort is required when a feature or a configuration is added or changed.
+For this purpose, \textbf{M1.2} counts the files that such a change creates or modifies.
+Counts follow from the annotations of the 150\% model, the configuration files and the feature model.
+They also include the tests whose feature gates name a feature, where a feature gate declares the features a test requires or excludes.
+Nine separately maintained rule sets serve as the comparison.
+All counts come from \texttt{count-adaptation-effort.py}.
+It reads the annotated reactions, the feature gates of the tests, the nine configuration files and the feature model.
+Per feature, it lists the files that name it.
+From the version history, it additionally takes the commits that changed the rules after the annotations were complete, together with the blocks each commit edited.
+
+Changes of a configuration or of a shared rule are considerably cheaper with the 150\% model.
+Since a configuration is a single file that lists the selected features, adding a configuration creates exactly one file.
+Separate rule sets instead require a copy of all ten rule files, which is then edited for every feature that differs.
+A defect in a block that all configurations hold is corrected in one rule file instead of nine.
+History confirms this advantage.
+After the annotations were complete, seven commits changed the rules with 15 edits of rule files.
+Every edit concerned blocks that all nine derived rule sets contain, so separate rule sets would have required 135 edits.
+\Autoref{table:adaptation-effort} summarizes these changes.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Change}                       & \textbf{150\% model}                       & \textbf{Nine rule sets}     \\
+        \hline
+        Add a configuration                   & 1 configuration file                       & \makecell[l]{10 rule files, \\ copied and edited} \\
+        \hline
+        Correct a block of all configurations & 1 rule file                                & 9 rule files                \\
+        \hline
+        Seven later commits to the rules      & 15 file edits                              & 135 file edits              \\
+        \hline
+        Add \textit{AccessorGeneration}       & \makecell[l]{2 rule files, 2 configuration                               \\ files, feature model} & \makecell[l]{2 rule files in each \\ of 2 rule sets} \\
+        \hline
+        Rename \textit{ClassCreation.Class}   & \makecell[l]{2 rule files, 7 configuration                               \\ files, feature model, \\ 14 test files} & none \\
+        \hline
+    \end{tabular}
+    \caption{Files created or modified by a change of a configuration, a rule or a feature, with the 150\% model and with nine separately maintained rule sets}
+    \label{table:adaptation-effort}
+\end{table}
+
+Changes of a feature itself cost about as much as with separate rule sets, and renaming a feature costs more.
+Adding the optional feature \textit{AccessorGeneration} modifies its two rule files, the two configurations that select it and the feature model, five files in total.
+Separate rule sets would modify the same two rule files in each of the two affected rule sets, four files in total.
+They would, however, contain the code of the feature twice.
+Tests of a new feature are needed in both arrangements and are not counted.
+Renaming a feature modifies every file that names it, including the test files whose feature gates refer to it.
+For \textit{ClassCreation.Class}, these are two rule files, seven configurations, the feature model and 14 test files, 24 files in total.
+Separate rule sets contain no feature names and are not affected at all.
+Neither the preprocessor nor the annotations check a feature name against the feature model, so only the tests reveal a missed occurrence.
+
+\textbf{Q1.2} thus has a mixed answer.
+Adding a configuration costs one file, and correcting a shared rule one file instead of nine.
+Adding a feature costs about as many files as with separate rule sets.
+Renaming a feature of the library example costs up to 24 files.
+
+\subsection{Changes to the original rules}
+\label{sec:Evaluation:AnnotationMechanism:ChangesToTheOriginalRules}
+
+\textbf{Q1.3} asks how much the original rule set had to be changed to become a 150\% rule set.
+\textbf{M1.3} compares the umljava rules at the commit from which this work forked with the 150\% model.
+Both are split into blocks, which are matched by file, kind and name.
+A block with the same trigger or body under a new name counts as renamed.
+This comparison is performed by \texttt{classify-reaction-changes.sh}.
+It fetches both revisions from the repositories, extracts every reaction and routine without comments and whitespace, and sorts each block into one category.
+Lines of code are counted per category, and the cause of each changed block is assigned from the commit that introduced the change.
+
+Almost unchanged, the original rules live on in the 150\% model.
+It adds 872 lines of code to the 2394 lines of the original rules, an increase of 36.4\%.
+In return, it covers nine configurations instead of one.
+\Autoref{table:changes-original-rules} splits these lines.
+Most of them are new code, since 72 added blocks with 669 lines implement the alternatives and optional features.
+Another 145 lines are annotations, one per reaction.
+Of the 260 original blocks, 128 routines remain unchanged, and 109 reactions only received an annotation.
+Only 23 blocks changed, with 64 added and 18 removed lines.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|r|r|}
+        \hline
+        \textbf{Part of the change}               & \textbf{Blocks} & \textbf{LOC} \\
+        \hline
+        Annotations                               & 145             & +145         \\
+        \hline
+        Added reactions and routines              & 72              & +669         \\
+        \hline
+        Changed or renamed reactions and routines & 23              & +64 / $-$18  \\
+        \hline
+        \quad adaptation to Vitruvius 4           & 7               &              \\
+        \hline
+        \quad defect of the original rules        & 3               &              \\
+        \hline
+        \quad previously unsupported case         & 4               &              \\
+        \hline
+        \quad interaction between features        & 11              &              \\
+        \hline
+        Lines outside blocks                      &                 & +12          \\
+        \hline
+        \textbf{Total}                            &                 & +872         \\
+        \hline
+    \end{tabular}
+    \caption{Lines of code the 150\% model adds to the 2394 lines of the original rules, split by the part of the change, with the changed blocks classified by the cause of their change. Two blocks have two causes.}
+    \label{table:changes-original-rules}
+\end{table}
+
+Four causes lie behind the changed blocks.
+Seven routines replace a list access by a variant that tolerates an empty list.
+This change was required by the update of the case study from Vitruvius 3 to Vitruvius 4.
+Three blocks correct defects of the original rules, which the migrations exposed.
+Two routines derived UML attributes from Java fields without setting their visibility.
+Every such attribute therefore kept the UML default \texttt{public}.
+A third routine removed an implemented interface from a Java class but kept the import of that interface.
+After a migration that renamed the interface, the import referred to a classifier that no longer existed, and the file could not be parsed.
+Four blocks handle cases that the original rules rejected with a message, namely attributes and methods inserted into a Java interface.
+Interactions between features account for the remaining eleven blocks.
+When \textit{ClassCreation.Interface} realizes a UML class as a Java interface, Java forces the fields of that interface to be \texttt{public}, \texttt{static} and \texttt{final}.
+Rules from Java to UML copied these forced modifiers back into the UML model, which three routines now avoid.
+Six creation routines only checked that no counterpart of their own kind, such as a Java class, existed.
+Where another feature had already realized the counterpart as an interface or an enumeration, a second counterpart was created.
+These routines now require the absence of any classifier.
+Two further routines create interface methods instead of class methods and constructors when the Java counterpart of a UML class is an interface.
+All of these interactions became visible when the library example was migrated between the configurations.
+
+For \textbf{Q1.3}, the conversion into a 150\% rule set thus changed the original rules only slightly.
+It required one annotation per reaction, 72 new blocks and changes to 15 existing blocks for previously unsupported cases and interactions between features.
+Eight further changed blocks adapt to Vitruvius 4 or correct defects of the original rules, which the conversion merely exposed.
+
+\subsection{Validity of the derived configurations}
+\label{sec:Evaluation:AnnotationMechanism:ValidityOfTheDerivedConfigurations}
+
+\textbf{Q1.4} asks whether the configurations derived by the preprocessor produce valid and operational rules.
+\textbf{M1.4} checks for every configuration whether the generated Java code compiles.
+It also counts the tests of the case study that pass with and without their feature gates and the original tests that pass on config1.
+Both test runs are executed by \texttt{umljava-tests-all-configs} of the case study repository.
+For each configuration, it builds the case study against the derived rules and runs all tests.
+A second invocation repeats this with the feature gates switched off.
+Passed, failed and erroneous tests are extracted from the build logs and recorded in the figures folder of the thesis repository.
+
+Of the 189 tests in the case study, 162 existed before this work.
+Apart from their feature gates and the split of one parameterized test into four tests, these original tests are unchanged.
+Many of them assume the realization of the original rules, for instance that a UML class becomes a Java class.
+Their feature gates therefore declare the features they require or exclude, as described in \autoref{sec:Implementation:Preprocessor}.
+A test whose gate excludes a configuration still runs in it.
+For such a test, failing is the expected outcome, and it counts as passed exactly when it fails.
+Without gates, every test counts as passed only when it succeeds, so this run shows the actual outcome of every test.
+
+All nine derived rule sets are valid.
+Each of them compiles, since its tests could not run otherwise.
+With gates, all 189 tests behave as expected in all nine configurations, as \autoref{table:case-study-tests} shows.
+Since the gated runs report no failure, a test fails without gates exactly when its gate excludes the configuration.
+Most tests are excluded by config7 and config8, as they realize UML classes as interfaces and enumerations, which many original tests do not expect.
+Original behavior is preserved as well.
+Without gates, config1 fails 21 tests, all of which were added in this work, so all 162 original tests pass on config1.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|r|r|r|}
+        \hline
+        \textbf{Configuration} & \makecell{\textbf{Passing}             \\ \textbf{without gates}} & \makecell{\textbf{Failing} \\ \textbf{without gates}} & \makecell{\textbf{As expected} \\ \textbf{with gates}} \\
+        \hline
+        \textbf{config1}       & 168                        & 21  & 189 \\
+        \hline
+        \textbf{config2}       & 159                        & 30  & 189 \\
+        \hline
+        \textbf{config3}       & 169                        & 20  & 189 \\
+        \hline
+        \textbf{config4}       & 159                        & 30  & 189 \\
+        \hline
+        \textbf{config5}       & 169                        & 20  & 189 \\
+        \hline
+        \textbf{config6}       & 173                        & 16  & 189 \\
+        \hline
+        \textbf{config7}       & 67                         & 122 & 189 \\
+        \hline
+        \textbf{config8}       & 66                         & 123 & 189 \\
+        \hline
+        \textbf{config9}       & 162                        & 27  & 189 \\
+        \hline
+    \end{tabular}
+    \caption{The 189 tests of the case study on the nine derived rule sets, without feature gates and with them}
+    \label{table:case-study-tests}
+\end{table}
+
+\textbf{Q1.4} is therefore answered positively, as all nine configurations produce valid and operational rules.
+Their tests behave as their feature gates declare, and config1 passes all 162 original tests.
+
+\subsection{Preprocessing overhead}
+\label{sec:Evaluation:AnnotationMechanism:PreprocessingOverhead}
+
+\textbf{Q1.5} asks how much overhead preprocessing adds when a configuration is built and tested.
+\textbf{M1.5} relates the time of preprocessing to a test run of the case study.
+Both times are measured by \texttt{measure-preprocessing-overhead.py} on the wall clock.
+It derives config1 from the annotated reactions 100 times, each in a Java virtual machine of its own.
+Afterwards, it builds and tests the case study against config1 ten times.
+From these runs, it extracts mean, minimum and maximum of both series and the share of preprocessing.
+
+Preprocessing adds a negligible overhead.
+Deriving config1 takes 0.628\,s in the mean, between 0.611\,s and 0.712\,s, including the start of the virtual machine.
+A clean build and test run of the case study takes 113.2\,s in the mean, between 110.6\,s and 116.5\,s.
+Preprocessing thus accounts for 0.55\% of the time to derive, build and test a configuration.
+
+In answer to \textbf{Q1.5}, preprocessing adds 0.628\,s, less than one percent of the time to build and test a configuration.
+
+\section{Migration quality}
+\label{sec:Evaluation:MigrationQuality}
+
+G2 analyzes the quality of a migration in five aspects.
+Questions one to four examine the selective migrations of the matrix run.
+Strategies for choosing the dominant model of a full migration are compared by the fifth.
+
+\subsection{Equivalence to a derivation from scratch}
+\label{sec:Evaluation:MigrationQuality:EquivalenceToADerivationFromScratch}
+
+\textbf{Q2.1} asks whether a migrated V-SUM describes the same state that the new rules derive from scratch.
+\textbf{M2.1} counts the configuration pairs whose migrated models are equivalent to the derivation from scratch of the target configuration.
+Counting is done by \texttt{compare-migrated-models.py}.
+For every pair of the matrix run, it reads the migrated models and the derivation from scratch of the target configuration.
+It reports the first level at which both are equal, the deviating classifiers and the features whose remains cause them.
+
+Both the UML model and all Java files are compared.
+Identifiers of UML elements are replaced by labels derived from their position in the model, since every run generates new identifiers.
+Four levels are applied, each relaxing the previous one.
+At the exact level, models and files have to be identical.
+The second level ignores the handwritten body of \texttt{Member.totalWeight}, because \texttt{--preserve report} never restores it and \textbf{Q2.3} evaluates it separately.
+On the third level, the order of the modifiers of a Java declaration is ignored.
+The fourth level additionally ignores the order of imports and of the members of a Java type.
+In the UML model, it ignores the order of packaged elements, attributes, operations and supertypes.
+Parameters, enumeration literals and statements keep their order at every level, since their order carries meaning.
+A migration is equivalent if its models are equal at the fourth level.
+Any classifier that differs at this level is a deviation.
+Correspondences between the models are not part of the comparison.
+
+Of the 72 migrations, 29 are equivalent to the derivation from scratch, as \autoref{table:migration-matrix} shows.
+These are all migrations out of config1, config7 and config8 and the five migrations from config2, config3, config4, config5 and config6 to config9.
+Two of them, config1 to config7 and config8 to config7, are even identical to the derivation from scratch.
+Another 21 differ only in the handwritten body, one only in the order of modifiers and five only in the order of members.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+        \hline
+        \textbf{From \textbackslash{} To} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} \\
+        \hline
+        \textbf{1}                        & =          & 0          & 0          & 0          & 0          & 0          & 0          & 0          & 0          \\
+        \hline
+        \textbf{2}                        & 2          & =          & 2          & 2          & 2          & 2          & 2          & 2          & 0          \\
+        \hline
+        \textbf{3}                        & 5          & 5          & =          & 5          & 5          & 5          & 5          & 5          & 0          \\
+        \hline
+        \textbf{4}                        & 3          & 3          & 3          & =          & 3          & 3          & 3          & 3          & 0          \\
+        \hline
+        \textbf{5}                        & 4          & 4          & 4          & 4          & =          & 4          & 4          & 4          & 0          \\
+        \hline
+        \textbf{6}                        & 1          & 1          & 1          & 1          & 1          & =          & 1          & 1          & 0          \\
+        \hline
+        \textbf{7}                        & 0          & 0          & 0          & 0          & 0          & 0          & =          & 0          & 0          \\
+        \hline
+        \textbf{8}                        & 0          & 0          & 0          & 0          & 0          & 0          & 0          & =          & 0          \\
+        \hline
+        \textbf{9}                        & 6          & 5          & 5          & 6          & 6          & 6          & 6          & 6          & =          \\
+        \hline
+    \end{tabular}
+    \caption{Deviating classifiers after the selective migration from configuration $i$ (rows) to configuration $j$ (columns), compared with the derivation from scratch of $j$ while ignoring the handwritten body and the order of modifiers, members and imports. A zero marks an equivalent migration. On the diagonal, marked =, both configurations share their rules, and the migration ends without changes.}
+    \label{table:migration-matrix}
+\end{table}
+
+Each of the remaining 43 migrations deviates in one to six classifiers.
+All deviations are remains, which are elements that a feature of the source configuration created and that the target configuration does not derive.
+\Autoref{table:deviation-classes} lists the remains of the five features that cause them.
+These features change the UML model as well, as described in \autoref{sec:RunningExample:FeaturesAndConfigurations}.
+A selective migration keeps the dominant UML model and reinserts its affected elements unchanged.
+No rule of the target configuration reverts the changes that these features made to the UML model, so the remains persist.
+On the Java side, these remains follow from the UML side, since the target rules derive the Java code again from the unchanged UML elements.
+For instance, the UML leaf flag of \texttt{Member.register} makes the target rules derive a \texttt{final} Java method again.
+Each of the five features is selected by one configuration besides config9.
+Its remains therefore occur in the 14 migrations from these two configurations into the seven configurations without the feature.
+A migration out of config9 combines the remains of up to five features and deviates in five or six classifiers.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|r|r|}
+        \hline
+        \textbf{Source feature}      & \textbf{Remains}                             & \makecell{\textbf{Classifiers}      \\ \textbf{per migration}} & \textbf{Migrations} \\
+        \hline
+        \textit{InterfacePrefix}     & \makecell[l]{interface \texttt{IBorrowable},                                       \\ realized by \texttt{Media}}           & 2 & 14 \\
+        \hline
+        \textit{RealizationSuffix}   & \makecell[l]{class \texttt{MediaImpl},                                             \\ used by \texttt{Book} and \texttt{Member}} & 3 & 14 \\
+        \hline
+        \textit{AccessorGeneration}  & private attributes                           & 5                              & 14 \\
+        \hline
+        \textit{ConstructorCreation} & default constructors                         & 4                              & 14 \\
+        \hline
+        \textit{MethodStaticCall}    & leaf operation \texttt{Member.register}      & 1                              & 14 \\
+        \hline
+    \end{tabular}
+    \caption{Remains of the source configuration that make a migration deviate from the derivation from scratch, with the number of deviating classifiers per migration and the number of migrations in which the remains occur}
+    \label{table:deviation-classes}
+\end{table}
+
+These deviations are not elements that the identification missed, as \autoref{sec:Evaluation:InconsistencyIdentification:PrecisionOfTheIdentification} shows.
+They mark the limit of a migration that keeps the dominant model as it is.
+A full migration keeps the dominant model as well and can therefore be expected to leave the same remains.
+However, the selection matrix records no models that would confirm this.
+
+\textbf{Q2.1} is thus answered with 29 of the 72 migrations being equivalent to the derivation from scratch.
+In the other 43, remains of five features persist, as a repropagation of the dominant UML model does not revert them.
+
+\subsection{Validity of the migrated artifacts}
+\label{sec:Evaluation:MigrationQuality:ValidityOfTheMigratedArtifacts}
+
+\textbf{Q2.2} asks whether the artifacts produced by a migration are valid.
+\textbf{M2.2} counts the migrations whose Java code compiles.
+Tests of the case study cannot serve as a further check, since they build their own V-SUM instead of loading a migrated one.
+After each migration, the matrix run compiles the Java code and writes the compiler errors into the \texttt{RUN.md} of the pair.
+\texttt{summarize-migration-reports.py} reads these errors for all 72 pairs and groups the pairs by message and by the member each error points at.
+It also reads the preservation report of each pair and determines what happened to the handwritten body.
+All nine derivations from scratch compile.
+
+Most failures of the migrated code have a single cause, which the preservation report documents.
+Of the 72 migrations, 30 compile.
+In 40 others, the only error is the missing return statement of \texttt{Member.totalWeight}.
+In 32 of them, the migration re-derived \texttt{Member}, and \texttt{--preserve report} did not restore the handwritten body.
+For these 32 errors, the report shows how to fix them.
+In 25 migrations, the body can be restored as listed, and in seven, its loop first has to be adapted to a renamed class.
+Remaining are the eight migrations out of config7, whose source holds no body, since config7 realizes \texttt{Member} as an interface.
+
+Two migrations fail because of remains in the UML model.
+In the migrations from config5 and from config9 to config8, the UML model still holds the default constructors of \textit{ConstructorCreation}.
+Rules of config8 derive them as public constructors of enumerations, which Java does not allow, and the handwritten body is missing as well.
+
+Regarding \textbf{Q2.2}, the migrated code compiles in 30 of the 72 migrations.
+In 40 migrations, only the handwritten body is missing, and in two, remains in the UML model lead to invalid constructors in enumerations.
+
+\subsection{Content not carried over}
+\label{sec:Evaluation:MigrationQuality:ContentNotCarriedOver}
+
+\textbf{Q2.3} asks how much content cannot be carried over automatically.
+\textbf{M2.3} counts the handwritten elements that the preservation report lists as preservable or lost, and it groups the other listed elements by cause.
+These counts come from \texttt{summarize-migration-reports.py}, introduced in \autoref{sec:Evaluation:MigrationQuality:ValidityOfTheMigratedArtifacts}.
+It reads every entry of the 72 preservation reports with its section and reason.
+Entries inside \texttt{Member.totalWeight} are compared with the body in the source and in the migrated \texttt{Member.java}.
+Every other entry is counted once and grouped by its reason.
+
+As described in \autoref{sec:Concept:Migration:Preservation}, the preservation step lists content that no correspondence points at.
+Such content is underived, regardless of whether a person or a rule created it.
+Handwritten content is only the part that a person wrote, which in the library example is the body of \texttt{Member.totalWeight}.
+Each report sorts its entries into three sections.
+Entries under \textit{Would be kept} are the ones that \texttt{--preserve user} would restore.
+Entries under \textit{Not kept} cannot be placed in the migrated models, and ambiguous placements additionally appear under \textit{Open decisions}.
+
+Wherever a migration removes the handwritten body, the report finds it.
+\Autoref{table:preservation-handwritten} shows what happens to the three statements of the body.
+In 22 migrations, \texttt{Member} is not re-derived, so the body stays in place.
+In five of them, the report nevertheless lists two references inside the body as not kept, although the body already refers to the renamed class.
+These ten references are not counted among the items of \autoref{table:preservation-causes}.
+In the other 42 migrations with a body in the source, \texttt{Member} is re-derived, and the report lists the body.
+All three statements can be restored in 27 of them.
+In seven migrations into config4 or config9, the loop refers to \texttt{Media}, which these configurations rename to \texttt{MediaImpl}.
+Only the other two statements can therefore be restored.
+In the eight migrations into config7, \texttt{Member} becomes an interface, whose methods hold no statements, and the body is lost.
+Migrations out of config7 have no body to begin with.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|r|l|}
+        \hline
+        \textbf{Situation}                            & \textbf{Migrations} & \textbf{Report}                   \\
+        \hline
+        \texttt{Member} is not re-derived             & 22                  & body stays, statements not listed \\
+        \hline
+        \texttt{Member} is re-derived                 & 27                  & three statements would be kept    \\
+        \hline
+        \makecell[l]{\texttt{Member} is re-derived, and the loop                                                \\ refers to the renamed \texttt{Media}} & 7 & \makecell[l]{two statements would be kept, \\ the loop is not kept} \\
+        \hline
+        \texttt{Member} becomes an interface          & 8                   & three statements are not kept     \\
+        \hline
+        \texttt{Member} is an interface in the source & 8                   & no body to list                   \\
+        \hline
+    \end{tabular}
+    \caption{The handwritten body of \texttt{Member.totalWeight} in the preservation reports of the 72 migrations}
+    \label{table:preservation-handwritten}
+\end{table}
+
+Besides the handwritten body, the 72 reports list 957 distinct underived items that no person wrote.
+\Autoref{table:preservation-causes} groups them by cause.
+Most of them exist because the rules create elements without a correspondence, such as modifiers, initial values and generated methods.
+These 790 items appear under \textit{Would be kept}, although restoring them with \texttt{--preserve user} is not advisable.
+Rules of the source configuration created them, and the target rules replace or omit them.
+Restoring would add them to what the target rules derived.
+It would, for instance, place a \texttt{public} modifier next to the \texttt{private} one of \textit{AccessorGeneration} or the accessors of a class into an interface.
+Renames, values that the target rules already set and ambiguous pairings account for the 167 items under \textit{Not kept}.
+References and files of a renamed classifier occur in migrations into config2, config4 and config9, whose rules rename \texttt{Borrowable} and \texttt{Media}.
+All 21 ambiguous pairings occur in migrations into config7 and config8, where several migrated elements could take the place of one old element.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|r|}
+        \hline
+        \textbf{Cause}                        & \textbf{Elements}                    & \textbf{Items} \\
+        \hline
+        \makecell[l]{created by the rules                                                             \\ without a correspondence} & modifiers                  & 395            \\
+        \hline
+                                              & initial values                       & 72             \\
+        \hline
+                                              & accessor and enumeration methods     & 220            \\
+        \hline
+                                              & references                           & 89             \\
+        \hline
+                                              & imports                              & 14             \\
+        \hline
+        rename of a classifier                & references to the renamed classifier & 70             \\
+        \hline
+                                              & files of the renamed classifier      & 28             \\
+        \hline
+        value already set by the target rules & values of single-valued features     & 48             \\
+        \hline
+        ambiguous pairing                     & elements with several counterparts   & 21             \\
+        \hline
+        \textbf{Total}                        &                                      & 957            \\
+        \hline
+    \end{tabular}
+    \caption{Distinct underived items that no person wrote in the preservation reports of the 72 migrations, grouped by cause and element. The first cause appears under \textit{Would be kept}, the others under \textit{Not kept}, and the ambiguous pairings also under \textit{Open decisions}.}
+    \label{table:preservation-causes}
+\end{table}
+
+For the library example, \texttt{--preserve report} is thus the appropriate degree of preservation, and a person restores the handwritten body from the report.
+
+In summary, \textbf{Q2.3} finds at most three handwritten statements per migration that cannot be carried over automatically.
+Reports list them in all 42 migrations that remove them.
+With \texttt{--preserve user}, all three statements would return in 27 of these migrations.
+The loop would remain lost in seven migrations and the whole body in eight.
+None of the 957 further items stems from content that a person wrote.
+They stem from elements that the rules create without a correspondence, from renames, from values already set and from ambiguous pairings.
+
+\subsection{Reversibility}
+\label{sec:Evaluation:MigrationQuality:Reversibility}
+
+\textbf{Q2.4} asks whether a migration is reversible.
+\textbf{M2.4} counts the configuration pairs for which migrating back reproduces the original V-SUM.
+For each of the 72 pairs, the V-SUM derived from scratch with config $i$ is migrated to config $j$ and back to config $i$.
+Both migrations use the settings of the matrix run.
+A returned V-SUM has to carry the registry of config $i$ again, and its UML model has to be identical apart from the identifiers.
+Its Java files are compared at levels similar to those of \autoref{sec:Evaluation:MigrationQuality:EquivalenceToADerivationFromScratch}.
+They have to be identical, identical without the handwritten body, additionally without the order of modifiers and finally without the order of imports and members, while statements keep their order.
+Both legs of every round trip are run by \texttt{check-reversibility.sh}, one migration after the other through the command line interface of the migration tool.
+Afterwards, it compares the returned V-SUM with the original one.
+Per pair, it reports whether UML model and registry match and at which level the Java files match.
+
+Only in a few pairs is a migration reversible.
+Two of the 72 round trips reproduce the original V-SUM exactly, from config7 through config1 and from config7 through config8.
+Ignoring the handwritten body raises the count to 12, ignoring the order of modifiers to 14 and ignoring the order of imports and members to 25.
+Whenever the first migration re-derives \texttt{Member}, the body is lost, as \autoref{sec:Evaluation:MigrationQuality:ContentNotCarriedOver} shows.
+
+In the other 47 round trips, the UML model does not return, and the remains of \autoref{sec:Evaluation:MigrationQuality:EquivalenceToADerivationFromScratch} explain them.
+During the first migration, the features of config $j$ change the UML model.
+The migration back then starts from a V-SUM with these changes and leaves the remains of \autoref{table:deviation-classes}, unless config $i$ selects the same features.
+A round trip from config1 through config3, for instance, leaves the attributes private.
+Accordingly, the UML model returns in 68 of the 72 pairs exactly when the migration from config $j$ to config $i$ in \autoref{table:migration-matrix} is equivalent.
+Two exceptions pass through config7, which adds a return parameter to the default constructors that \textit{ConstructorCreation} left in the UML model.
+In the other two, the migration back aborts.
+It aborts in five pairs in total, all of them returning to config4 or config9.
+Each time, a change refers to the class \texttt{MediaImpl}, which the first migration left behind as a remain of \textit{RealizationSuffix}.
+
+\textbf{Q2.4} is therefore answered negatively, with 2 reversible migrations out of 72.
+A round trip inherits the remains of its first migration and often loses the handwritten body, so it rarely returns to the original V-SUM.
+
+\subsection{Choice of the dominant model}
+\label{sec:Evaluation:MigrationQuality:ChoiceOfTheDominantModel}
+
+\textbf{Q2.5} asks how the strategies for choosing the dominant model compare.
+\textbf{M2.5} records per strategy the chosen dominant model, the number of changes the migration makes and the time the selection takes.
+All 81 pairs of the library example are migrated by the selection matrix as full migrations, once per strategy.
+Explicit selection runs twice, once with UML and once with Java as the dominant model.
+Changes are counted as the atomic changes between the derived models before and after the migration.
+Their elements are matched by their structure rather than by identifiers.
+For the reachability and the fewest changes strategies, the selection time includes building the propagation graph, which takes 9.2\,ms in the mean.
+BrakeCaseStudy is migrated with each of its four metamodels as the explicit choice and with the two other strategies.
+\texttt{measure-selection-strategies.py} reads the properties files of all these runs.
+Per strategy, it extracts the chosen dominant model, the changes and the selection time as median and range.
+It also lists the trial migrations of the fewest changes strategy.
+\Autoref{table:selection-strategies} and \autoref{table:selection-strategies-brake} show the results.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+        \hline
+        \textbf{Strategy} & \textbf{Dominant model} & \textbf{Changes} & \textbf{Selection time} \\
+        \hline
+        Explicit (UML)    & UML in 81               & 264 (0--908)     & 1.5\,ms (1.2--5.6)      \\
+        \hline
+        Explicit (Java)   & Java in 81              & 275 (52--361)    & 1.6\,ms (1.2--5.8)      \\
+        \hline
+        Reachability      & UML in 81               & 264 (0--908)     & 12.4\,ms (8.6--26.4)    \\
+        \hline
+        Fewest changes    & UML in 40, Java in 41   & 185 (0--361)     & 5.2\,s (4.4--6.0)       \\
+        \hline
+    \end{tabular}
+    \caption{Strategies for choosing the dominant model over the 81 configuration pairs of the library example, with the chosen dominant model, the changes of the migration and the selection time as median and range}
+    \label{table:selection-strategies}
+\end{table}
+
+Explicit selection costs almost nothing and makes the result predictable.
+Its selection takes 1.5\,ms, whereas the whole full migration takes 5.1\,s in the median.
+Which side leads to fewer changes depends on the pair, however.
+Keeping UML leads to fewer changes in 40 pairs, and keeping Java in the other 41.
+Java is the cheaper side in all migrations from other configurations into config3 and config7.
+The same holds for all nine pairs with config9 as the target and for seven of the eight migrations from other configurations into config4.
+It is also cheaper in the five remaining migrations out of config7 and in four further pairs.
+
+Nearly as cheap as the explicit strategy, the reachability strategy decided in neither subject by itself.
+UML and Java reach each other through one propagation each, so the strategy ties in all 81 pairs.
+It then takes UML as the metamodel that the V-SUM lists first.
+On BrakeCaseStudy, CAD and Simulink tie with two outgoing propagations each, and CAD is taken as the metamodel listed first.
+From CAD, however, the rules of BrakeCaseStudy cannot derive the other models.
+One of their routines creates a second CAD parameter for a Simulink parameter that already has one.
+A later lookup that expects a single counterpart then fails.
+This migration therefore fails, as does the explicit choice of CAD.
+With only two metamodels, the library example cannot assess this strategy.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+        \hline
+        \textbf{Strategy}       & \textbf{Dominant model} & \textbf{Changes} & \textbf{Selection time} \\
+        \hline
+        Explicit (brake system) & brake system            & 0                & 1.2\,ms                 \\
+        \hline
+        Explicit (CAD)          & CAD                     & failed           &                         \\
+        \hline
+        Explicit (Simulink)     & Simulink                & 34               & 1.5\,ms                 \\
+        \hline
+        Explicit (AUTOSAR)      & AUTOSAR                 & 42               & 1.3\,ms                 \\
+        \hline
+        Reachability            & CAD                     & failed           &                         \\
+        \hline
+        Fewest changes          & brake system            & 0                & 350\,ms                 \\
+        \hline
+    \end{tabular}
+    \caption{Strategies for choosing the dominant model on BrakeCaseStudy, whose unchanged rules re-derive a V-SUM of four metamodels}
+    \label{table:selection-strategies-brake}
+\end{table}
+
+Only the fewest changes strategy adapts the choice to the configuration pair.
+It chose the cheaper side in all 81 pairs, as the two explicit runs confirm.
+This lowers the median number of changes from 264 to 185 and the maximum from 908 to 361.
+On BrakeCaseStudy, the failing trial migration excludes CAD, and the strategy takes the brake system, whose re-derivation requires no change.
+Its price is one trial migration per candidate.
+On the library example, the selection takes 5.2\,s in the median, about as long as a whole full migration with the explicit strategy.
+A migration with the fewest changes strategy thus takes 8.6\,s in the median.
+
+Changes are the only criterion that the selection matrix measures per strategy.
+How the choice affects the handwritten body or the deviations of \textbf{Q2.1} remains open.
+Keeping Java as the dominant model, for instance, leaves the body in place.
+
+\textbf{Q2.5} ends in a trade-off.
+Explicit selection costs almost nothing and is predictable, but the cheaper side depends on the pair.
+Reachability is nearly as cheap, yet it tied in every case and fell back to the order of the metamodels.
+On BrakeCaseStudy, it thereby chose a metamodel from which the rules cannot derive the other models.
+Fewest changes chose the cheaper side in every pair and excluded the unusable metamodel.
+Its trial migrations, however, take about as long as a whole explicit migration.
+
+\section{Inconsistency identification}
+\label{sec:Evaluation:InconsistencyIdentification}
+
+G3 analyzes how a selective migration compares rule sets and matches triggers.
+It first establishes which inconsistencies a switch of the configuration causes.
+It then measures how precisely the selective migration identifies the elements concerned and which comparison of the rules this requires.
+
+\subsection{Inconsistency classes}
+\label{sec:Evaluation:InconsistencyIdentification:InconsistencyClasses}
+
+\textbf{Q3.1} asks which inconsistencies can arise when a feature selection is changed after artifacts already exist.
+\textbf{M3.1} counts the identified inconsistency classes by number and type.
+For every pair, the derivation from scratch of the source configuration stands for the existing artifacts.
+Its counterpart, the derivation from scratch of the target configuration, stands for the state that the new rules derive.
+Both are compared classifier by classifier in the UML and the Java model, with a renamed classifier paired by its name without prefix and suffix.
+Every property in which the two differ is a place, for instance the visibility of one attribute or the supertype of one class.
+A place is an inconsistency between the existing artifacts and the new rules.
+Each place is assigned to one inconsistency class and to the feature of the switch that causes it.
+This comparison is implemented by \texttt{classify-inconsistencies.py}.
+It reads the nine derivations from scratch and the feature selections of the configurations.
+For all 72 pairs, it lists every place with its class and feature.
+Places, pairs and features are then counted per class.
+
+A configuration switch leaves many inconsistencies, yet they fall into few inconsistency classes.
+Over the 72 pairs, 2484 places fall into twelve inconsistency classes of four types, structure, naming, value and content, as \autoref{table:inconsistency-classes} shows.
+Structural classes concern the kind of classifiers and members and surplus or missing constructors and accessors.
+They also concern references that an interface or an enumeration cannot hold.
+Naming classes concern renamed classifiers and the references to them.
+Visibilities, modifiers and initial values form the value classes, and the content class concerns the statements of generated accessors.
+Accessors only differ in pairs with config7, since every other configuration derives them as well, whereas \textit{AccessorGeneration} changes the visibility of the attributes.
+
+\begin{sidewaystable}[htbp]
+    \centering
+    \begin{tabularx}{0.95\textheight}{|l|>{\raggedright\arraybackslash}X|l|>{\raggedright\arraybackslash}X|r|r|}
+        \hline
+        \textbf{Type} & \textbf{Class}                               & \textbf{Model} & \textbf{Feature}                                                                          & \textbf{Pairs} & \textbf{Places} \\
+        \hline
+        Structure     & classifier kind (class, interface, enum)     & Java           & \textit{ClassCreation.Interface}, \textit{ClassCreation.Enum}                             & 30             & 120             \\
+        \hline
+                      & member kind (class method, interface method) & Java           & \textit{ClassCreation.Interface}                                                          & 16             & 64              \\
+        \hline
+                      & constructor surplus or missing               & UML, Java      & \textit{ConstructorCreation}                                                              & 28             & 224             \\
+        \hline
+                      & accessor surplus or missing                  & Java           & \textit{ClassCreation.Interface}                                                          & 16             & 320             \\
+        \hline
+                      & reference an interface or enum cannot hold   & Java           & \textit{ClassCreation.Interface}, \textit{ClassCreation.Enum}                             & 28             & 112             \\
+        \hline
+        Naming        & classifier name and file name                & UML, Java      & \textit{InterfacePrefix}, \textit{RealizationSuffix}                                      & 42             & 112             \\
+        \hline
+                      & reference to a renamed classifier            & UML, Java      & \textit{InterfacePrefix}, \textit{RealizationSuffix}                                      & 42             & 268             \\
+        \hline
+        Value         & visibility                                   & UML, Java      & \textit{AccessorGeneration}, \textit{ClassCreation.Interface}                             & 40             & 588             \\
+        \hline
+                      & member modifier                              & UML, Java      & \textit{ClassCreation.Interface}, \textit{MethodStaticCall}, \textit{AttributeStaticCall} & 40             & 440             \\
+        \hline
+                      & classifier modifier                          & Java           & \textit{DataTypeCreation.Record}                                                          & 28             & 28              \\
+        \hline
+                      & initial value                                & Java           & \textit{ClassCreation.Interface}                                                          & 16             & 160             \\
+        \hline
+        Content       & derived statement                            & Java           & \textit{AttributeStaticCall}                                                              & 24             & 48              \\
+        \hline
+    \end{tabularx}
+    \caption{Inconsistency classes between the artifacts of one configuration and the derivation from scratch of another, with the models they occur in, the features that cause them, the number of the 72 configuration pairs in which they occur and the number of places over all pairs}
+    \label{table:inconsistency-classes}
+\end{sidewaystable}
+
+Five inconsistency classes also occur in the dominant UML model.
+Their UML places stem from \textit{InterfacePrefix}, \textit{RealizationSuffix}, \textit{AccessorGeneration}, \textit{ConstructorCreation} and \textit{MethodStaticCall}, the features that change the UML model as well.
+These five classes hold 1632 of the 2484 places.
+Where the source configuration selects one of these features and the target does not, its UML places are the remains of \autoref{table:deviation-classes}.
+Seven classes occur in the Java model only.
+A repropagation of the dominant model re-derives the Java elements that hold these places, so a migration can resolve them.
+
+Beyond the models, the registry of a V-SUM no longer matches the new rules.
+A switch adds or removes between 2 and 30 rule identifiers, and no rule that both configurations hold changes its semantic hash.
+Of the 145 reactions of the 150\% model, 113 exist in all nine configurations, and the other 32 belong to features that vary between them.
+
+Answering \textbf{Q3.1}, a configuration switch causes twelve inconsistency classes of four types in the models.
+Five of them also affect the dominant UML model, and the registry additionally differs from the new rules by the reactions of the switched features.
+
+\subsection{Precision of the identification}
+\label{sec:Evaluation:InconsistencyIdentification:PrecisionOfTheIdentification}
+
+\textbf{Q3.2} asks how precisely the affected model elements are identified.
+\textbf{M3.2} compares the dirty rules and affected elements that each migration of the matrix run reports with the places of \autoref{table:inconsistency-classes}.
+A selective migration repropagates an affected element together with everything that element contains.
+A place therefore counts as reached if its whole classifier is affected.
+It also counts as reached if the element that holds it is affected, such as an attribute, which also holds the places of its accessors.
+This comparison is carried out by \texttt{compare-selection.py}.
+From the \texttt{RUN.md} of every pair, it reads the dirty rules with the elements their triggers matched and the affected elements.
+Places are taken from \texttt{classify-inconsistencies.py}.
+For every place, it determines whether an affected element reaches it and whether it still differs after the migration.
+Conversely, it checks for every affected element whether the element contains a place.
+
+Over the 72 pairs, the comparison of identifiers reports 848 dirty rules, but only 364 of them match an element of the dominant model.
+No dirty rule from Java to UML matches, since the triggers of these rules name Java metaclasses while UML dominates.
+Rules from UML to Java cover the same features, and their triggers do match.
+A rule that reacts to a removal, such as \texttt{UmlInterfaceRealizationRemovedStripSuffix}, matches nothing either, as described in \autoref{sec:Concept:Migration:SelectiveMigration:Triggers}.
+
+Almost every inconsistency is reached by the identification.
+Of the 2484 places, 2386 or 96.1\% lie inside an affected element, as \autoref{table:selection-coverage} shows.
+In 66 of the 72 pairs, every place is reached.
+All 98 unreached places belong to the two renaming features.
+For \textit{RealizationSuffix}, the trigger is the interface realization of \texttt{Media}.
+Its effects, however, are the name of the class and the references to it in other classifiers.
+Its 88 unreached places, 20 names of the class and 68 references to it, therefore lie outside the affected realization.
+Another 10 places are Java imports of the interface that \textit{InterfacePrefix} renames, which have no counterpart in the dominant model.
+Rules that the switch leaves unchanged nevertheless propagate the rename to 49 of the 98 unreached places.
+
+\begin{sidewaystable}[htbp]
+    \centering
+    \begin{tabularx}{0.95\textheight}{|l|>{\raggedright\arraybackslash}X|r|r|r|r|r|}
+        \hline
+        \textbf{Type} & \textbf{Class}                               & \textbf{Places} & \textbf{Reached} & \textbf{Not reached} & \textbf{Resolved} & \textbf{Remaining} \\
+        \hline
+        Structure     & classifier kind (class, interface, enum)     & 120             & 120              & 0                    & 120               & 0                  \\
+        \hline
+                      & member kind (class method, interface method) & 64              & 64               & 0                    & 64                & 0                  \\
+        \hline
+                      & constructor surplus or missing               & 224             & 224              & 0                    & 112               & 112                \\
+        \hline
+                      & accessor surplus or missing                  & 320             & 320              & 0                    & 320               & 0                  \\
+        \hline
+                      & reference an interface or enum cannot hold   & 112             & 112              & 0                    & 112               & 0                  \\
+        \hline
+        Naming        & classifier name and file name                & 112             & 92               & 20                   & 56                & 56                 \\
+        \hline
+                      & reference to a renamed classifier            & 268             & 190              & 78                   & 141               & 127                \\
+        \hline
+        Value         & visibility                                   & 588             & 588              & 0                    & 326               & 262                \\
+        \hline
+                      & member modifier                              & 440             & 440              & 0                    & 414               & 26                 \\
+        \hline
+                      & classifier modifier                          & 28              & 28               & 0                    & 28                & 0                  \\
+        \hline
+                      & initial value                                & 160             & 160              & 0                    & 160               & 0                  \\
+        \hline
+        Content       & derived statement                            & 48              & 48               & 0                    & 48                & 0                  \\
+        \hline
+        \textbf{All}  &                                              & 2484            & 2386             & 98                   & 1901              & 583                \\
+        \hline
+    \end{tabularx}
+    \caption{The places of \autoref{table:inconsistency-classes}, split by whether they lie inside an affected element and by whether they still differ from the derivation from scratch after the migration}
+    \label{table:selection-coverage}
+\end{sidewaystable}
+
+All 583 places that remain after the migration belong to the five classes with a UML side.
+Although the identification reaches 534 of them, the repropagation reinserts the dominant elements unchanged, as \autoref{sec:Evaluation:MigrationQuality:EquivalenceToADerivationFromScratch} explains.
+
+Up to the guards that a trigger summary omits, the identification is precise.
+Over the 72 migrations, 464 affected elements are reported, between one and 15 per pair.
+Of these, 392 or 84.5\% contain a place, and 16 more lie in a classifier that differs elsewhere.
+Without need, the remaining 56 affected elements are repropagated.
+They are the interface \texttt{Identifiable} whenever \textit{InterfacePrefix} changes and the enumeration \texttt{MediaType} whenever \textit{DataTypeCreation.Record} changes.
+Through a \texttt{check} guard, the routine \texttt{addJavaInterfacePrefix} skips interfaces whose name already starts with an \texttt{I}.
+Reactions for inserted UML data types exclude enumerations through a \texttt{with} clause.
+Since the trigger summary carries neither guard, 48 of the 72 migrations repropagate a classifier without need.
+This costs work, but it causes no element to be missed, as described in \autoref{sec:Concept:Migration:SelectiveMigration:Triggers}.
+
+\textbf{Q3.2} is thus answered with a high precision.
+Identification reaches 96.1\% of the places and misses only the effects that a rename has on other classifiers.
+Of the 464 affected elements, 56 are repropagated without need, because trigger summaries omit the guards of their rules.
+
+\subsection{Comparison of identifiers and semantic hashes}
+\label{sec:Evaluation:InconsistencyIdentification:ComparisonOfIdentifiersAndSemanticHashes}
+
+\textbf{Q3.3} asks which rule changes require a semantic hash instead of a comparison of reaction identifiers.
+\textbf{M3.3} counts the kinds of rule changes that each comparison detects.
+Configuration switches of the matrix run cannot answer this question alone.
+In its registry part, \texttt{compare-migrated-models.py} compares the registries of the source and target derivations of every pair by identifier, hash and trigger.
+Over the 72 pairs, 424 identifiers are added and 424 removed.
+Of the 8312 rule entries that source and target share, summed over the pairs, none differs in its hash or its trigger.
+Kinds of changes are therefore taken from unit tests, namely \texttt{ConsistencyRuleHashTest} of the Reactions Language as well as \texttt{RuleHashDiffTest} and \texttt{SelectiveMigrationTest} of the migration.
+Each test changes a rule set in one way and checks which comparison reports the change.
+Two kinds follow from what the hash covers rather than from a test.
+These are feature annotations and the bodies of called Java or Xtend methods.
+\Autoref{table:rule-change-kinds} summarizes the ten kinds.
+One of them concerns overriding, since a segment can override a routine of a segment it imports.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Change of the rules}          & \textbf{Identifiers} & \textbf{Semantic hashes} \\
+        \hline
+        Reaction added or removed             & detected             & detected                 \\
+        \hline
+        Reaction renamed                      & removal and addition & removal and addition     \\
+        \hline
+        Reaction body changed                 & not detected         & detected                 \\
+        \hline
+        Trigger changed                       & not detected         & detected                 \\
+        \hline
+        Called routine changed                & not detected         & detected                 \\
+        \hline
+        Routine overridden in another segment & not detected         & detected                 \\
+        \hline
+        Uncalled routine changed              & ignored              & ignored                  \\
+        \hline
+        Comments or formatting changed        & ignored              & ignored                  \\
+        \hline
+        Feature annotation changed            & ignored              & ignored                  \\
+        \hline
+        Called Java or Xtend method changed   & not detected         & not detected             \\
+        \hline
+    \end{tabular}
+    \caption{Kinds of changes of a rule set and whether the comparison of identifiers and the comparison of semantic hashes report them. Detected means reported as a change, ignored means correctly not reported, and not detected means that a change of behavior goes unreported.}
+    \label{table:rule-change-kinds}
+\end{table}
+
+For every configuration switch, the comparison of identifiers suffices.
+Since the preprocessor keeps or drops whole reactions and leaves their text unchanged, a switch only adds and removes identifiers.
+Ordinary evolution of a rule set, in contrast, needs the semantic hash.
+It detects changed bodies, triggers and called routines, which all keep their identifier.
+Comments, formatting and feature annotations are ignored, since the hash covers the abstract syntax of the rules only.
+Its one gap is a Java or Xtend method that a routine calls.
+Such a method is recorded by its identifier only, so a change of the method body goes unreported.
+Both comparisons report a renamed reaction as the removal of one rule and the addition of another.
+This overstates the change, but the migration still repropagates the right elements.
+
+For \textbf{Q3.3}, four of the ten kinds require the semantic hash, namely changed reaction bodies, triggers, called routines and overridden routines.
+Identifiers alone detect two kinds, added or removed and renamed reactions, which include all configuration switches.
+Both comparisons correctly ignore three kinds, and one kind, a changed Java or Xtend method, escapes both.
+
+\section{Migration effort}
+\label{sec:Evaluation:MigrationEffort}
+
+G4 analyzes the selective migration with respect to its scope and its runtime compared to a full migration.
+Whereas a full migration re-derives every derived model, a selective migration restricts the work to the affected elements.
+
+\subsection{Scope of the selective migration}
+\label{sec:Evaluation:MigrationEffort:ScopeOfTheSelectiveMigration}
+
+\textbf{Q4.1} asks which share of the rules and model elements of a V-SUM a selective migration processes.
+\textbf{M4.1} relates the dirty rules to all rules and the repropagated elements to all elements of the dominant model, per configuration pair.
+Rules are counted in the union of the registry and the new specifications, since a dirty rule belongs to only one of them.
+An affected element is repropagated together with its contents, so the repropagated elements are those inside the affected subtrees.
+They are counted in the dominant UML model, from which the new rules derive their Java counterparts.
+All shares are computed by \texttt{measure-migration-scope.py}.
+It takes the numbers of dirty rules and rules from the \texttt{cell.properties} of every pair and the affected elements from its \texttt{RUN.md}.
+In the UML model of the source derivation from scratch, it then counts the elements below each affected element.
+
+Comparing the registry with the new rules restricts the dirty rules to a small share.
+A switch marks between 2 and 30 rules as dirty, a median of 10 rules or 8.1\% of all rules, as \autoref{table:migration-scope-shares} shows.
+Dirty rules of a pair are exactly the reactions of the features that only one of its two configurations selects.
+With unchanged rules, no rule is dirty, and the migration ends after the comparison.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|r|l|l|}
+        \hline
+        \textbf{Scope}                & \textbf{Total} & \textbf{Per pair} & \textbf{Share per pair}             \\
+        \hline
+        Dirty rules                   & 848            & 10 (2--30)        & 8.1\% (1.7--21.0) of all rules      \\
+        \hline
+        Affected elements             & 464            & 6 (1--15)         & 12.0\% (2.0--28.0) of the UML model \\
+        \hline
+        Elements in affected subtrees & 1990           & 33 (1--45)        & 66.0\% (2.0--83.3) of the UML model \\
+        \hline
+    \end{tabular}
+    \caption{Scope of the selective migration over the 72 migrated configuration pairs as total, count per pair and share per pair, the last two as median and range}
+    \label{table:migration-scope-shares}
+\end{table}
+
+Much of the models is repropagated, however.
+A median of six affected elements is reported, 12.0\% of the elements of the UML model.
+Most of these elements are whole classifiers, whose subtrees hold a median of 66.0\% of the UML model.
+In 50 of the 72 pairs, the repropagation covers at least half of the UML model.
+Only the six switches among config1, config4 and config6, which affect one interface realization or a few members, stay at or below 10\%.
+A feature that concerns every class, such as an alternative of \textit{ClassCreation} or \textit{ConstructorCreation}, affects these classes as a whole.
+Moreover, the repropagation applies all rules of the target configuration to the affected subtrees, not only the dirty ones.
+
+\textbf{Q4.1} therefore receives a two-sided answer, as a selective migration marks a median of 8.1\% of the rules as dirty.
+It nevertheless repropagates a median of 66.0\% of the UML model, since its affected elements are mostly whole classifiers.
+
+\subsection{Runtime}
+\label{sec:Evaluation:MigrationEffort:Runtime}
+
+\textbf{Q4.2} asks whether the reduced scope translates into a reduced runtime.
+\textbf{M4.2} compares the runtime of the selective migrations of the matrix run with full migrations.
+These are the full migrations of the explicit strategy with UML as the dominant model in the selection matrix.
+Both record the time of their phases, which \autoref{table:migration-runtime} groups.
+Time that a full migration spends counting its changes for \textbf{M2.5} is excluded.
+Snapshot and remaining bookkeeping are omitted, since they take less than 0.5\,s in every run.
+\texttt{measure-migration-runtime.py} reads the phase times from the \texttt{cell.properties} of the matrix run and from the properties files of the selection matrix.
+It groups the phases and computes median, range and the ratio per pair.
+Propagation times are related to the share of the affected subtrees from \autoref{sec:Evaluation:MigrationEffort:ScopeOfTheSelectiveMigration}.
+It also compares the identical full migrations of the explicit and the reachability strategy to estimate the variation between runs.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Phase}                 & \textbf{Selective}   & \textbf{Full}        \\
+        \hline
+        \textbf{Loading the V-SUM}     & 2.24\,s (2.16--2.34) & 2.23\,s (2.18--2.35) \\
+        \hline
+        \textbf{Identifying the scope} & 0.39\,s (0.34--0.53) &                      \\
+        \hline
+        \textbf{Propagation}           & 1.32\,s (0.41--1.74) & 1.62\,s (1.26--1.89) \\
+        \hline
+        \textbf{Preservation step}     & 0.88\,s (0.75--1.03) & 0.95\,s (0.81--1.17) \\
+        \hline
+        \textbf{Whole migration}       & 4.94\,s (4.13--5.42) & 5.14\,s (4.70--5.39) \\
+        \hline
+    \end{tabular}
+    \caption{Runtime of the selective and the full migration over the 72 migrated configuration pairs of the library example per phase and in total, as median and range}
+    \label{table:migration-runtime}
+\end{table}
+
+Where it can skip all work, the selective migration is clearly faster.
+With unchanged rules, it ends after comparing the registry with the new specifications in 40\,ms.
+A full migration of the same nine pairs still re-derives everything in 5.1\,s in the median.
+For changed rules, the propagation of the selective migration is shorter than the re-derivation of the full migration in 71 of the 72 pairs.
+Their medians are 1.32\,s and 1.62\,s.
+
+Over the whole migration, however, the gain is small.
+In the median, the selective migration takes 4.94\,s against 5.14\,s, and the median ratio per pair is 0.96.
+It is faster in 52 of the 72 pairs and slower in the other 20, by at most 5\%.
+This median gain of 0.2\,s per pair exceeds the typical variation between runs, but not the largest one.
+Explicit and reachability strategy perform identical full migrations in two separate batches.
+Their runtimes differ by 74\,ms per pair in the median and by at most 0.3\,s.
+Three effects explain why the smaller scope saves so little.
+Loading the V-SUM and the preservation step take about the same time in both migrations and account for more than half of each run.
+Identifying the scope adds 0.39\,s.
+Repropagation covers two thirds of the UML model in the median (\autoref{sec:Evaluation:MigrationEffort:ScopeOfTheSelectiveMigration}), and its duration grows with the size of the affected subtrees.
+For the six pairs that repropagate at most 10\% of the UML model, it takes 0.78\,s in the median.
+For the 50 pairs that repropagate at least half of it, it takes 1.37\,s.
+
+Runtime is not the only difference, since a selective migration leaves every element outside the affected subtrees untouched.
+In 22 pairs, for instance, the handwritten body of \texttt{Member.totalWeight} stays in place.
+A full migration with UML as the dominant model always re-derives the Java model and discards the body.
+
+\textbf{Q4.2} can thus only be answered in part, as the reduced scope translates into a reduced runtime only under unchanged rules and in the propagation.
+A migration with unchanged rules ends almost immediately, and the propagation is shorter in 71 of the 72 pairs.
+For changed rules, however, the whole migration is only 4\% faster in the median on the library example.
+Fixed costs dominate, and the affected subtrees cover most of the UML model.
+
+\section{Generalizability}
+\label{sec:Evaluation:Generalizability}
+
+G5 analyzes whether the approach transfers to rules beyond the ones it was developed on.
+For this purpose, the annotation mechanism is transferred to the pcmumlclass rules.
+Preprocessor and migration are also inspected for code paths that are specific to rules or metamodels.
+
+\subsection{Transfer to pcmumlclass}
+\label{sec:Evaluation:Generalizability:TransferToPcmumlclass}
+
+\textbf{Q5.1} asks whether the transferred solution remains operational.
+\textbf{M5.1} counts the existing tests of the case study that pass without changes.
+Rules of pcmumlclass keep a repository of the Palladio Component Model (PCM) consistent with a UML class model \cite{umlpcmcasestudy}.
+They consist of 126 reactions and 251 routines in 32 reactions files, and the case study contains 53 tests.
+Designing a feature model for these rules would be a task of its own.
+Every reaction is therefore annotated with the single feature \textit{PcmUmlClass}, which the only configuration selects.
+This exercises annotation, preprocessing and compilation on other rules without changing their behavior.
+No model of the case study is migrated.
+Annotations are inserted by \texttt{annotate-pcmumlclass-reactions.py}, which also checks that it annotated all 126 reactions.
+After preprocessing, \texttt{compare-preprocessed-rules.py} checks file by file that the derived rules keep every reaction and routine of the annotated ones.
+Test results come from the build of the case study on both rule states.
+
+The transferred rules remain fully operational.
+All 52 executable tests pass on the unchanged rules as well as on the rules derived from the annotated ones.
+One further test is disabled in both states.
+All 126 reactions and all 251 routines are contained in the derived rules.
+They differ from the original rules only in the order of blocks in 21 files and in comments outside blocks in five files.
+
+Only a single feature is used in the transfer, however.
+It shows that the mechanism works on other rules, but not that these rules benefit from variability.
+
+\textbf{Q5.1} is answered positively, since the transferred solution remains operational.
+All 52 executable tests pass after annotation and preprocessing without any change to the tests.
+
+\subsection{Specific code paths}
+\label{sec:Evaluation:Generalizability:SpecificCodePaths}
+
+\textbf{Q5.2} asks whether the mechanism is independent of the concrete rules and metamodels it is applied to.
+\textbf{M5.2} counts the code paths of the preprocessor and the migration that exist for one rule set or metamodel.
+Such a path imports a metamodel package, checks a type against a metamodel class or names a rule set or metamodel in the code.
+An adapter that implements the hooks of the migration for one metamodel counts as one such path.
+These paths are searched by \texttt{count-specific-code-paths.py} in the main sources of both tools.
+It lists the imports of metamodel packages, type checks against their classes and lines naming a rule set or metamodel.
+Lines of code are counted per package.
+For the migration, it additionally lists the hooks of the adapter interface, their implementations and their call sites.
+
+No specific code path exists in the preprocessor.
+Its 441 lines of code in twelve classes work on the text of the rule files and refer to no metamodel and no rule set.
+
+Exactly one specific code path exists in the migration, the adapter for JaMoPP \cite{heidenreich2009closing}.
+Of its 7186 lines of code in 98 classes, only the 323 lines of the adapter package refer to a metamodel.
+Of these, 190 lines implement the Java adapter.
+Another 133 lines form the generic interface, the registry of adapters, the fallback adapter and a helper for resource paths.
+\Autoref{table:adapter-hooks} lists the eleven hooks of the interface and their 30 call sites in 14 classes outside the package.
+Only \texttt{handles} has to be implemented, and the fallback adapter overrides nothing else.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|l|p{6.6cm}|l|}
+        \hline
+        \textbf{Hook}                      & \textbf{Java adapter}                                                                 & \textbf{Sites} \\
+        \hline
+        \texttt{handles}                   & namespace URIs below \texttt{http://www.emftext.org/java}                             & dispatch       \\
+        \hline
+        \texttt{claimsResource}            & files with the extension \texttt{java}                                                & dispatch       \\
+        \hline
+        \texttt{prepareStandalone}         & registers the resource factory and the JDK standard library on the classpath          & 1              \\
+        \hline
+        \texttt{loadOptions}               & loads without layout information                                                      & 5              \\
+        \hline
+        \texttt{normalizeLoadedResource}   & names a compilation unit after its file                                               & 4              \\
+        \hline
+        \texttt{refreshSerializedForm}     & reprints a file whose text changed without a change of its own elements               & 1              \\
+        \hline
+        \texttt{isPlatformLibraryResource} & excludes the stubs below \texttt{java}, \texttt{javax}, \texttt{sun} and \texttt{jdk} & 10             \\
+        \hline
+        \texttt{externalIdentityOf}        & the qualified name of a classifier outside the migrated folder                        & 1              \\
+        \hline
+        \texttt{prepareForReplayInto}      & rebinds references from the classpath cache to the live classpath of the view         & 2              \\
+        \hline
+        \texttt{dropResolutionCaches}      & clears the compilation units a package cached                                         & 3              \\
+        \hline
+        \texttt{requiresChangeRecording}   & commits with change recording instead of state-based derivation                       & 3              \\
+        \hline
+        \textbf{Total}                     &                                                                                       & 30             \\
+        \hline
+    \end{tabular}
+    \caption{Hooks of the adapter interface of the migration, the behavior of the Java adapter behind each hook and the number of call sites outside the adapter package}
+    \label{table:adapter-hooks}
+\end{table}
+
+The Java adapter needs all eleven hooks, because JaMoPP differs from metamodels persisted as XMI in four respects.
+It stores models as source text, which has to be loaded without layout information and printed again after a rename.
+It resolves references through a global classpath, whose standard library it writes into the folder of the V-SUM, where the migration has to exclude it.
+It caches resolved compilation units, which every snapshot and comparison has to discard.
+Its elements carry no identifiers, so the migration commits them with change recording instead of matching them by identifier.
+
+All other metamodels run through the fallback adapter without code of their own.
+Ten such metamodels are used in the tests of the migration.
+These are UML, PCM, the four metamodels of BrakeCaseStudy, the test metamodels AllElementTypes and AllElementTypes2, and the mockups of UML and PCM.
+A new metamodel with properties like those of JaMoPP requires an adapter of its own, which has to be added to the registry in code.
+
+In conclusion for \textbf{Q5.2}, the preprocessor is independent of rules and metamodels, since it depends on the Reactions Language only.
+Up to one adapter, the migration is independent as well.
+JaMoPP requires this adapter as the only one of eleven metamodels that is not persisted as XMI.
+
+\section{Threats to validity}
+\label{sec:Evaluation:ThreatsToValidity}
+
+Threats to the validity of the results are grouped into internal and external validity, following Yu and Ohlund \cite{yu2010threats}.
+Each threat names the results it affects and, where one exists, the measure that mitigates it.
+
+\subsection{Internal validity}
+\label{sec:Evaluation:ThreatsToValidity:InternalValidity}
+
+Internal validity concerns whether the measurements substantiate the claims and whether uncontrolled factors influenced them.
+Since \textbf{M1.1} compares the 150\% model with complete copies of every configuration, it overstates the alternative.
+\Autoref{sec:Evaluation:AnnotationMechanism:Compactness} therefore also reports the size of separate rule sets that share their common blocks.
+With feature gates, a test that is expected to fail counts as passed.
+The results of \textbf{M1.4} therefore also rest on the run without gates and on the original tests on config1.
+Equivalence in \textbf{M2.1} ignores the handwritten body and the order of modifiers, members and imports.
+\textbf{Q2.3} evaluates the body separately, and the ignored orders carry no meaning in the library example.
+Correspondences between the models are left out as well, so a migration could be equivalent in its models but not in its correspondences.
+Compilation is only a necessary condition for valid artifacts, since no behavioral test runs on a migrated V-SUM.
+Since the fewest changes strategy minimizes the number of changes that \textbf{M2.5} reports, its advantage in this number holds by construction.
+Both explicit runs mitigate this threat, as they measure both sides independently of the strategy.
+Places of \textbf{M3.1} and \textbf{M3.2} depend on the granularity of the comparison script, which pairs classifiers by name and assigns places to features by rules written for the library example.
+
+The features, the nine configurations, the library example, the feature gates and the evaluation scripts were designed for this thesis, so the subjects may favor the approach.
+Defects of the rules that the matrix run exposed were corrected before the final runs.
+Evaluated rules are therefore adapted to the 81 evaluated pairs, and further configurations could reveal further interactions.
+Every migration starts from a derivation from scratch that received one handwritten method.
+A V-SUM that evolved through a long history of edits may contain states that no such derivation produces.
+As the ground truth of \textbf{M2.1}, \textbf{M3.1} and \textbf{M3.2}, the derivation from scratch serves as well.
+A defect of the rules that affects the derivation and the migration alike remains invisible to these metrics.
+Every migration was measured once, and identical full migrations in two batches differ by 74\,ms per pair in the median and by up to 0.3\,s.
+For single pairs, the small runtime gain of \textbf{M4.2} lies within this range and is therefore only interpreted in the median.
+
+Generated rule sets, migrated models, preservation reports and evaluation scripts are available in the thesis repository \cite{thesis-repo}, from which the scripts of \autoref{table:evaluation-scripts} compute all numbers of this chapter.
+These scripts were cross-checked against each other, since the complete comparison of \textbf{M2.1} and the places of \textbf{M3.1} identify the same deviating migrations.
+Regenerating the matrix run and the selection matrix reproduced every result apart from the timings.
+Measured times depend on the machine described in \autoref{sec:Evaluation:EvaluationSetup} and differ in absolute terms on other hardware.
+
+\subsection{External validity}
+\label{sec:Evaluation:ThreatsToValidity:ExternalValidity}
+
+External validity concerns whether the results generalize beyond the evaluated subjects.
+Variability was only evaluated on the umljava rules.
+Their nine configurations select every feature at least once, but the feature model admits many more combinations.
+Optional features are combined only in config6 and config9.
+With a single feature, the transfer to pcmumlclass only shows that the mechanism applies to other rules.
+With eight classifiers and 216 to 437 model elements, the library example is small.
+On larger V-SUMs, loading and preservation take a different share of a migration, so the runtimes of \textbf{M4.2} do not carry over directly.
+Only two metamodels are related by the library example, and BrakeCaseStudy, the only system with four metamodels, was migrated with unchanged rules.
+Comparing the strategies for choosing the dominant model thus rests on a narrow basis.
+UML is the dominant model in every selective migration, so a selective migration with Java as the dominant model remains unevaluated.
+In the matrix run, rules only change by configuration switches, and the comparison of semantic hashes is covered by unit tests alone.
+Handwritten content of the library example consists of a single method body.
+Selective migration relies on a correction of the change recording in Vitruv-Change for cascaded deletions \cite{vitruv-change-issue}.
+Its results therefore do not carry over to a Vitruvius without that correction.
+Finally, the JaMoPP version of Vitruvius covers the language features of Java 5 \cite{heidenreich2009closing}, so conventions that require newer ones, such as records, cannot be expressed.

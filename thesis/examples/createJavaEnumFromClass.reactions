@@ -1,0 +1,14 @@
+routine createJavaEnumFromClass(uml::Class umlClass) {
+  match {
+    require absence of java::ConcreteClassifier corresponding to umlClass
+  }
+  create {
+    val javaEnum = new java::Enumeration
+  }
+  update {
+    javaEnum.name = umlClass.name
+    javaEnum.makePublic
+    createJavaCompilationUnit(umlClass, javaEnum)
+    addCorrespondenceBetween(umlClass, javaEnum)
+  }
+}

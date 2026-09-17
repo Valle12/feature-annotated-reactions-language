@@ -1,0 +1,10 @@
+\Abstract
+\label{ch:Zusammenfassung}
+
+In Vitruvius legen Konsistenzerhaltungsregeln genau eine Abbildung zwischen Metamodellen fest.
+Alternative Abbildungen erfordern Kopien der Regeln.
+Diese Arbeit ergänzt die Reactions Language um Feature Annotationen, sodass ein Präprozessor die Regeln jeder Konfiguration aus einem 150\% Modell ableitet.
+Ändern sich die Regeln eines persistierten \mbox{V-SUM}, leitet eine vollständige Migration alle übrigen Modelle aus einem dominanten Modell neu ab, eine selektive Migration nur bei betroffenen Elementen.
+Für die umljava-reactions umfasst das 150\% Modell 3266 Codezeilen, neun getrennte Kopien dagegen 23791.
+Von 72 selektiven Migrationen zwischen verschiedenen Konfigurationen entsprechen 29 einer Ableitung mit einem leeren V-SUM.
+Eine selektive Migration betrifft im Median 8,1\,\% der Regeln, aber 66\,\% des UML-Modells.

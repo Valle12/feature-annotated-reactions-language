@@ -1,0 +1,8 @@
+@feature(type = interface)
+reaction UmlClassInserted {
+  after element uml::Class inserted in uml::Package[packagedElement]
+  call {
+	  createOrFindJavaClass(newValue)
+	  insertJavaClassifier(newValue, affectedEObject)
+  }
+}

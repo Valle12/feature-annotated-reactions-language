@@ -1,0 +1,113 @@
+\chapter{Conclusion}
+\label{ch:Conclusion}
+
+Consistency preservation rules in the Reactions Language establish a fixed mapping between metamodels.
+Enabling a second mapping, for example, representing UML classes as Java interfaces, necessitates maintaining a separate set of rules.
+A persisted V-SUM does not retain information about which rules were used to derive its models.
+When the rules are modified, the models retain the state established by the previous rules.
+Both of these challenges are addressed in this thesis.
+Feature annotations place the reactions of all mappings in one 150\% model.
+A preprocessor derives the reactions of a single configuration.
+A migration leads a persisted V-SUM to the changed rules.
+A full migration re-derives all other models from a dominant model, whereas a selective migration only repropagates the affected elements.
+A preservation step reports or restores the underived content that both leave behind.
+Overall, the feature annotations achieve their intended purpose, although some drawbacks remain.
+The migration process also achieves its objective, and selective migration confines the required work to a limited portion of the V-SUM.
+Some manual work remains, however, and the selective migration is hardly faster than a full one.
+
+\section{Feature annotations}
+\label{sec:Conclusion:FeatureAnnotations}
+
+The process of annotating the umljava reactions yielded notable insights.
+The 150\% model has 3,266 lines of code.
+Maintaining the nine configurations as separate copies would require 23,791 lines.
+It is evident that even two separate copies would exceed the dimensions of the 150\% model.
+A comparison of the 150\% model with the original rules reveals a 36.4\% growth, despite the former encompassing nine configurations, in contrast to the one configuration covered by the latter.
+The growth consists primarily of one annotation per reaction and the reactions and routines of the new features.
+Modifications to features and configurations are inexpensive as well.
+A configuration is defined as a single JSON file, while a feature encompasses one to five reaction files.
+The derived rules also demonstrate a similar behavior to the original ones.
+Config1 passes in all 162 of the original tests from the case study.
+In all nine configurations, the 189 tests exhibit the anticipated behavior with the feature gates.
+The preprocessing stage requires minimal additional time.
+The duration of this process is 0.628 seconds, which constitutes 0.55\% of the total time allocated for preprocessing, building, and testing a configuration.
+The preprocessor contains no code for a particular rule set or metamodel.
+Consequently, the transfer occurs to other rules, and all 52 executable tests of pcmumlclass continue to pass after annotating and preprocessing.
+
+However, it is important to note that this approach is not without its drawbacks.
+It has been demonstrated that features have the capacity to interact through shared routines.
+It was only after migrating every pair of configurations that several such interactions became apparent.
+Furthermore, it is important to note that the preprocessor does not verify a configuration against the feature model.
+The responsibility for ensuring the validity of these methods therefore falls upon the methodologist.
+In addition, the pcmumlclass transfer utilizes a single feature.
+This finding indicates that the mechanism functions under alternative rules, yet it does not demonstrate that these alternative rules are enhanced by variability.
+
+\section{Migration}
+\label{sec:Conclusion:Migration}
+
+Both types of migration successfully managed each configuration switch in the library example.
+All 72 selective migrations were completed without reverting to a full migration.
+Full migrations were completed for all 81 pairs using each strategy.
+
+A full migration may determine its dominant model using three distinct approaches.
+The explicit strategy has minimal costs and ensures predictable outcomes.
+The reachability strategy is similarly cost-effective, but it does not independently determine the dominant model.
+In the library example, UML and Java are mutually reachable, resulting in ties across all 81 configuration pairs.
+In the BrakeCaseStudy, a tie occurred between CAD and Simulink, with CAD selected as the model listed first.
+The rules applied in that case study do not enable re-derivation of other models from CAD.
+Given the presence of only two metamodels, the umljava rules are inadequate for evaluating this strategy.
+The fewest changes strategy adjusts the selection based on each configuration pair.
+In every pair within the library example, this strategy selected the less costly option.
+This approach reduced the median number of changes from 264 for UML to 185.
+In the BrakeCaseStudy, the unsuccessful trial of this strategy excluded CAD.
+These trials increase computational time, consuming 61\% of a migration duration, resulting in 8.9 seconds instead of 5.4 seconds.
+Regardless of the chosen strategy, a full migration re-derives each derived model, even if the reactions remain unchanged.
+
+Selective migration prevents this issue.
+The process of identifying the impact of a configuration switch is effective.
+Comparing identifiers is sufficient because no rule shared between two configurations has altered its semantic hash.
+Among the locations where a switch introduces inconsistencies, 96.1\% are contained within affected elements.
+The resulting scope remains limited, with a median of 8.1\% of the rules and 1.42\% of the model elements affected.
+For unchanged rules, selective migration completes in 49 milliseconds, while a full migration re-derives all elements in 5.1 seconds.
+Selective migration also preserves content that remains unchanged.
+For example, in 22 pairs, the handwritten body of \texttt{Member.totalWeight} is retained, whereas a full migration would discard it.
+
+However, reducing the scope does not significantly decrease the runtime.
+Selective migration requires a median time of 5.1 seconds, compared to 5.4 seconds for a full migration.
+In 16 out of 72 pairs, selective migration is slower, by at most 9\%.
+For a V-SUM of this scale, the majority of the runtime is consumed by model loading and the preservation step.
+Both processes require approximately the same amount of time in either migration scenario.
+Additionally, the trigger summaries omit \texttt{check} and \texttt{with} guards, resulting in unnecessary classifier repropagation in 48 out of 72 migrations.
+Furthermore, selective migration necessitates more supporting infrastructure than a full migration.
+It needs a registry that every change propagation persists, as well as semantic hashes and trigger summaries from the compiler.
+The evaluation does not utilize the semantic hashes, as configuration switches do not alter any shared rules.
+
+Switches that do not deselect any of the five features contributing to the UML model result in a state equivalent to a derivation from scratch.
+Switching from config1, config7, or config8 cannot deselect any features, since these configurations select none of them.
+Similarly, switching to config9, which selects all five features, does not result in any deselection.
+No compilation errors arise from elements that are incorrectly derived by the new rules.
+A limitation persists for features that also modify the dominant UML model.
+Examples are the prefix of \texttt{IBorrowable} and private attributes.
+Repropagation reinserts the dominant elements unchanged, and no rule in the new configuration reverses this effect.
+A full migration also retains the dominant model and is subject to the same limitation.
+Consequently, 29 out of the 72 selective migrations are equivalent to a derivation from scratch.
+Round trips to another configuration and subsequent return restore the original V-SUM in only 2 out of 72 cases.
+Thirty of the 72 migrations compile successfully, while the remaining cases fail due to the absence of the handwritten body for \texttt{Member.totalWeight}.
+
+The preservation step identifies handwritten content in all instances where a migration process removes such material.
+The report documented the complete presence of the body of \texttt{Member.totalWeight} in 27 migrations and its partial presence in seven migrations.
+In the eight migrations into config7, it marks the body as lost, since an interface method holds no statements.
+The reports also enumerate 957 items that were not authored by individuals, such as modifiers and initial values lacking direct correspondence.
+Restoring these items using \texttt{--preserve user} would place previous values alongside the newly generated ones.
+For the library example, \texttt{--preserve report} represents the appropriate level of preservation, requiring manual reintegration of the handwritten body.
+
+The migration process operates largely independently of specific metamodels.
+Ten metamodels using XMI need no code of their own.
+Only the Java implementation requires an adapter, consisting of 190 lines of code supporting eleven hooks.
+JaMoPP stores models as source text, resolves references using a global classpath, and does not assign identifiers to elements.
+Consequently, the umljava rules presented a demanding example because the requirements would not have been apparent from XMI metamodels alone.
+
+In summary, migration enables a persisted V-SUM to function effectively under changed rules.
+However, certain manual tasks are still required.
+Handwritten content must be restored from the preservation report manually.
+Residual effects of deselected features in the dominant model must be eliminated.
